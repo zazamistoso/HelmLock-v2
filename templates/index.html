@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Helmlock 4S</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:#08090b; --surface:#0f1117; --panel:#161a23; --border:#1f2433;
+  --accent:#f5c400; --green:#00e07a; --red:#ff3b55; --blue:#4f8ef7; --orange:#ff8c00;
+  --text:#eef0f6; --muted:#5a6478;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;user-select:none;}
+.kiosk{display:grid;grid-template-rows:72px 1fr;height:100vh;}
+
+/* Header */
+.header{display:flex;align-items:center;justify-content:space-between;padding:0 32px;background:var(--surface);border-bottom:1px solid var(--border);}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:0.1em;color:var(--accent);}
+.logo em{color:var(--text);font-style:normal;}
+.header-right{display:flex;align-items:center;gap:28px;font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--muted);}
+.live-badge{display:flex;align-items:center;gap:7px;color:var(--green);font-weight:500;}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:blink 1.8s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* Body */
+.body{display:flex;overflow:hidden;height:100%;}
+
+/* Sidebar */
+.sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:20px 12px;gap:6px;flex-shrink:0;}
+.nav-btn{display:flex;align-items:center;gap:12px;padding:16px 18px;border-radius:12px;border:none;background:transparent;color:var(--muted);font-family:'Barlow',sans-serif;font-size:0.95rem;font-weight:600;cursor:pointer;text-align:left;width:100%;transition:all 0.2s;}
+.nav-btn:hover{background:var(--panel);color:var(--text);}
+.nav-btn.active{background:rgba(245,196,0,0.1);color:var(--accent);}
+.nav-icon{font-size:1.3rem;}
+.sidebar-divider{height:1px;background:var(--border);margin:8px 6px;}
+.sidebar-info{padding:14px 18px;font-size:0.72rem;color:var(--muted);line-height:1.7;}
+.sidebar-info-title{color:var(--text);font-weight:600;font-size:0.78rem;margin-bottom:4px;}
+.sidebar-price{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--accent);letter-spacing:0.05em;}
+
+/* Content */
+.content{flex:1;overflow:hidden;position:relative;}
+
+/* Screens */
+.screen{position:absolute;inset:0;padding:28px 36px;display:none;flex-direction:column;overflow:hidden;animation:slideIn 0.3s ease;}
+.screen.active{display:flex;}
+@keyframes slideIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}
+.screen-title{font-family:'Bebas Neue',sans-serif;font-size:2.6rem;letter-spacing:0.06em;line-height:1;}
+.screen-sub{font-size:0.88rem;color:var(--muted);margin-top:5px;margin-bottom:22px;}
+
+/* Action bar */
+.action-bar{display:flex;align-items:center;gap:16px;padding-top:18px;flex-shrink:0;border-top:1px solid var(--border);margin-top:auto;}
+.selected-info{font-size:0.85rem;color:var(--muted);flex:1;}
+.selected-info strong{color:var(--accent);}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:0 36px;height:56px;border-radius:12px;border:none;font-family:'Barlow',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;letter-spacing:0.03em;transition:all 0.18s;}
+.btn-primary{background:var(--accent);color:#0a0b0d;}
+.btn-primary:hover:not(:disabled){background:#ffd220;transform:translateY(-1px);}
+.btn-primary:disabled{opacity:0.35;cursor:not-allowed;transform:none;}
+.btn-ghost{background:transparent;color:var(--muted);border:2px solid var(--border);}
+.btn-ghost:hover{border-color:var(--muted);color:var(--text);}
+.btn-danger{background:var(--red);color:#fff;}
+.btn-danger:hover{background:#ff1f3a;}
+.btn-orange{background:var(--orange);color:#fff;}
+.btn-orange:hover{background:#e07a00;}
+
+/* Locker Bank */
+.locker-bank-wrap{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.locker-cabinet{background:linear-gradient(160deg,#1e2330 0%,#161b27 100%);border:3px solid #2c3347;border-bottom:5px solid #0d0f14;border-radius:12px;padding:16px 16px 22px;box-shadow:8px 8px 0 #0a0c10,inset 0 1px 0 rgba(255,255,255,0.06);}
+.cabinet-label{text-align:center;font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.22em;color:var(--muted);margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #2c3347;}
+.locker-row{display:flex;gap:10px;margin-bottom:10px;}
+.locker-row:last-child{margin-bottom:0;}
+.locker-unit{width:115px;background:linear-gradient(180deg,#222838 0%,#1c2130 100%);border:2px solid #2e3a50;border-bottom:3px solid #111620;border-radius:8px;cursor:pointer;transition:all 0.18s;overflow:hidden;}
+.locker-unit:hover:not(.occ){border-color:var(--accent);transform:translateY(-3px);box-shadow:0 8px 20px rgba(245,196,0,0.2);}
+.locker-unit.sel{border-color:var(--accent)!important;box-shadow:0 0 0 3px rgba(245,196,0,0.3),0 8px 24px rgba(245,196,0,0.25)!important;}
+.locker-unit.occ{cursor:not-allowed;opacity:0.55;}
+.door-inner{padding:10px 10px 12px;display:flex;flex-direction:column;align-items:center;gap:7px;}
+.door-vents{width:100%;display:flex;flex-direction:column;gap:3px;}
+.vent-line{height:2px;background:rgba(0,0,0,0.5);border-radius:1px;}
+.door-plate{background:#0c1018;border:1px solid #1a2230;border-radius:5px;padding:4px 0;width:100%;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:#b8c0d0;line-height:1;}
+.locker-unit.sel .door-plate{color:var(--accent);}
+.locker-unit.occ .door-plate{color:#4a5268;}
+.door-bottom{display:flex;align-items:center;justify-content:space-between;width:100%;padding:0 2px;}
+.door-handle{width:14px;height:30px;background:linear-gradient(180deg,#3a4258,#252d3e);border-radius:4px;border:1px solid #3a4a60;}
+.door-led{width:9px;height:9px;border-radius:50%;}
+.locker-unit.avail .door-led{background:var(--green);box-shadow:0 0 8px var(--green);animation:ledPulse 2.2s infinite;}
+.locker-unit.occ   .door-led{background:var(--red);box-shadow:0 0 5px var(--red);}
+.locker-unit.sel   .door-led{background:var(--accent);box-shadow:0 0 10px var(--accent);animation:none;}
+@keyframes ledPulse{0%,100%{opacity:1}50%{opacity:0.45}}
+.door-status{font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;font-weight:500;}
+.locker-unit.avail .door-status{color:var(--green);}
+.locker-unit.occ   .door-status{color:var(--red);}
+.locker-unit.sel   .door-status{color:var(--accent);}
+.cabinet-base{height:12px;margin:12px -16px -22px;background:linear-gradient(180deg,#111520,#0a0c12);border-top:2px solid #0a0c10;border-radius:0 0 10px 10px;}
+.locker-legend{display:flex;gap:20px;justify-content:center;margin-top:14px;}
+.legend-item{display:flex;align-items:center;gap:7px;font-size:0.75rem;color:var(--muted);}
+.legend-dot{width:9px;height:9px;border-radius:50%;}
+
+/* Payment */
+.pay-options{display:flex;gap:20px;flex:1;align-items:center;}
+.pay-card{flex:1;max-width:300px;background:var(--panel);border:2px solid var(--border);border-radius:20px;padding:40px 28px;display:flex;flex-direction:column;align-items:center;gap:14px;cursor:pointer;transition:all 0.2s;}
+.pay-card:hover:not(.disabled){border-color:var(--accent);transform:translateY(-4px);box-shadow:0 12px 32px rgba(245,196,0,0.15);}
+.pay-card.disabled{opacity:0.35;cursor:not-allowed;}
+.pay-icon{font-size:3.2rem;}
+.pay-name{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:0.06em;}
+.pay-desc{font-size:0.82rem;color:var(--muted);text-align:center;line-height:1.5;}
+.coming-tag{background:rgba(90,100,120,0.3);color:var(--muted);font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;padding:4px 10px;border-radius:20px;font-weight:600;}
+
+/* Receipt */
+.pin-result-wrap{display:flex;flex-direction:column;gap:20px;flex:1;justify-content:center;align-items:flex-start;}
+.big-pin-row{display:flex;gap:10px;}
+.big-pin-digit{width:56px;height:72px;background:var(--bg);border:2px solid var(--accent);border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:2.4rem;color:var(--accent);box-shadow:0 0 16px rgba(245,196,0,0.2);}
+.receipt-card{background:var(--panel);border:1.5px solid var(--border);border-radius:18px;padding:24px 28px;display:flex;flex-direction:column;gap:16px;width:420px;}
+.receipt-header{display:flex;align-items:center;justify-content:space-between;}
+.receipt-logo{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:0.1em;color:var(--accent);}
+.receipt-logo span{color:var(--text);}
+.receipt-tag{background:rgba(0,224,122,0.12);border:1px solid rgba(0,224,122,0.3);color:var(--green);font-size:0.7rem;font-weight:700;letter-spacing:0.08em;padding:4px 10px;border-radius:20px;}
+.receipt-divider{height:1px;background:var(--border);}
+.receipt-divider.dashed{background:none;border-top:1.5px dashed var(--border);}
+.receipt-rows{display:flex;flex-direction:column;gap:10px;}
+.receipt-row{display:flex;align-items:center;justify-content:space-between;font-size:0.85rem;}
+.receipt-label{color:var(--muted);}
+.receipt-val{font-family:'DM Mono',monospace;font-weight:500;font-size:0.82rem;}
+.receipt-val.accent{color:var(--accent);font-size:0.95rem;font-weight:600;}
+
+/* Retrieve / PIN entry */
+.retrieve-wrap{display:flex;flex-direction:column;gap:20px;flex:1;justify-content:center;}
+.pin-keypad-row{display:flex;gap:24px;align-items:flex-start;}
+.pin-field{display:flex;gap:10px;}
+.pin-box{width:58px;height:74px;background:var(--panel);border:2px solid var(--border);border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:var(--text);transition:border-color 0.2s;}
+.pin-box.filled{border-color:var(--accent);color:var(--accent);}
+.pin-box.cursor{border-color:var(--blue);animation:cursorBlink 1s infinite;}
+@keyframes cursorBlink{0%,100%{border-color:var(--blue)}50%{border-color:var(--border)}}
+.keypad{display:grid;grid-template-columns:repeat(3,80px);grid-template-rows:repeat(4,72px);gap:10px;}
+.key{background:var(--panel);border:2px solid var(--border);border-radius:12px;font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--text);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;}
+.key:hover{background:var(--border);transform:scale(0.96);}
+.key:active{transform:scale(0.9);}
+.key.key-del{font-size:1.2rem;color:var(--muted);}
+.key.key-ok{background:var(--accent);color:#0a0b0d;border-color:var(--accent);font-family:'Barlow',sans-serif;font-size:1rem;font-weight:700;}
+.key.key-ok:hover{background:#ffd220;}
+
+/* Status boxes */
+.status-box{border-radius:20px;padding:24px 28px;display:none;flex-direction:column;align-items:center;gap:12px;text-align:center;width:100%;max-width:420px;}
+.status-box.show{display:flex;}
+.status-box.error{background:rgba(255,59,85,0.07);border:2px solid rgba(255,59,85,0.3);}
+.status-box.success{background:rgba(0,224,122,0.07);border:2px solid rgba(0,224,122,0.3);}
+.status-box.overtime{background:rgba(255,140,0,0.07);border:2px solid rgba(255,140,0,0.4);}
+.sb-icon{font-size:2.8rem;}
+.sb-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:0.06em;}
+.sb-title.green{color:var(--green);}
+.sb-title.red{color:var(--red);}
+.sb-title.orange{color:var(--orange);}
+.sb-sub{color:var(--muted);font-size:0.85rem;line-height:1.6;}
+.sb-badge{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;background:var(--accent);color:#0a0b0d;padding:6px 20px;border-radius:8px;letter-spacing:0.1em;}
+.ot-amount{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:var(--orange);}
+
+/* Spinner */
+.spinner-overlay{position:fixed;inset:0;background:rgba(8,9,11,0.8);display:none;align-items:center;justify-content:center;z-index:100;flex-direction:column;gap:16px;}
+.spinner-overlay.show{display:flex;}
+.spinner{width:48px;height:48px;border:4px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner-label{font-family:'DM Mono',monospace;font-size:0.8rem;color:var(--muted);}
+
+/* Footer */
+.footer{position:fixed;bottom:0;left:0;right:0;height:36px;background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px;font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--muted);z-index:10;}
+</style>
+</head>
+<body>
+
+<div class="spinner-overlay" id="spinner">
+  <div class="spinner"></div>
+  <div class="spinner-label" id="spinner-label">Processing…</div>
+</div>
+
+<div class="kiosk">
+  <header class="header">
+    <div class="logo">Helm<em>lock</em> <span style="color:var(--accent);font-size:1.1rem;font-family:'DM Mono',monospace;font-weight:500;">4S</span></div>
+    <div class="header-right">
+      <div class="live-badge"><div class="live-dot"></div>SYSTEM ONLINE</div>
+      <div id="clock">—</div>
+    </div>
+  </header>
+
+  <div class="body">
+    <nav class="sidebar">
+      <button class="nav-btn active" id="nav-rent" onclick="switchNav('rent')">
+        <span class="nav-icon">🔒</span> Rent Locker
+      </button>
+      <button class="nav-btn" id="nav-retrieve" onclick="switchNav('retrieve')">
+        <span class="nav-icon">📦</span> Retrieve Helmet
+      </button>
+      <div class="sidebar-divider"></div>
+      <div class="sidebar-info">
+        <div class="sidebar-info-title">RENTAL FEE</div>
+        <div class="sidebar-price">₱50.00</div>
+        <div>per hour · overtime applies</div>
+      </div>
+      <div class="sidebar-divider"></div>
+      <div class="sidebar-info">
+        <div class="sidebar-info-title">HOW IT WORKS</div>
+        Select locker → Pay ₱50 → Get PIN → Enter PIN to retrieve. Overtime charged per hour.
+      </div>
+    </nav>
+
+    <div class="content">
+
+      <!-- SCREEN: Select Locker -->
+      <div class="screen active" id="screen-select">
+        <div class="screen-title">Select a Locker</div>
+        <div class="screen-sub">Tap an available locker to reserve · ₱50.00 / hour</div>
+        <div class="locker-bank-wrap">
+          <div>
+            <div class="locker-cabinet">
+              <div class="cabinet-label">⬛&nbsp;&nbsp;HELMLOCK 4S · SMART LOCKER BANK&nbsp;&nbsp;⬛</div>
+              <div id="locker-rows"></div>
+              <div class="cabinet-base"></div>
+            </div>
+            <div class="locker-legend">
+              <div class="legend-item"><div class="legend-dot" style="background:var(--green);box-shadow:0 0 6px var(--green)"></div>Available</div>
+              <div class="legend-item"><div class="legend-dot" style="background:var(--red);box-shadow:0 0 4px var(--red)"></div>Occupied</div>
+              <div class="legend-item"><div class="legend-dot" style="background:var(--accent);box-shadow:0 0 6px var(--accent)"></div>Selected</div>
+            </div>
+          </div>
+        </div>
+        <div class="action-bar">
+          <div class="selected-info" id="selected-info">No locker selected</div>
+          <button class="btn btn-primary" id="btn-continue" disabled onclick="goToPayment()">Continue to Payment →</button>
+        </div>
+      </div>
+
+      <!-- SCREEN: Payment -->
+      <div class="screen" id="screen-payment">
+        <div class="screen-title">Choose Payment</div>
+        <div class="screen-sub" id="pay-sub">Locker #— · ₱50.00 / hour</div>
+        <div class="pay-options">
+          <div class="pay-card disabled">
+            <div class="pay-icon">💵</div>
+            <div class="pay-name">Cash</div>
+            <div class="pay-desc">Bills &amp; Coins via acceptor</div>
+            <div class="coming-tag">Coming Soon</div>
+          </div>
+          <div class="pay-card" onclick="selectPayment('stripe')">
+            <div class="pay-icon">💳</div>
+            <div class="pay-name">Cashless</div>
+            <div class="pay-desc">Credit / Debit Card<br/>GCash via Stripe</div>
+          </div>
+        </div>
+        <div class="action-bar">
+          <button class="btn btn-ghost" onclick="showScreen('screen-select')">← Back</button>
+        </div>
+      </div>
+
+      <!-- SCREEN: PIN Receipt -->
+      <div class="screen" id="screen-pin">
+        <div class="screen-title">Payment Confirmed</div>
+        <div class="screen-sub">Your locker is locked — keep this PIN safe</div>
+        <div class="pin-result-wrap">
+          <div class="receipt-card">
+            <div class="receipt-header">
+              <div class="receipt-logo">HELMLOCK <span>4S</span></div>
+              <div class="receipt-tag">✅ PAID</div>
+            </div>
+            <div class="receipt-divider"></div>
+            <div class="receipt-rows">
+              <div class="receipt-row"><span class="receipt-label">🔒 Locker</span><span class="receipt-val" id="r-locker">#—</span></div>
+              <div class="receipt-row"><span class="receipt-label">💳 Payment</span><span class="receipt-val" id="r-method">—</span></div>
+              <div class="receipt-row"><span class="receipt-label">🕐 Rented At</span><span class="receipt-val" id="r-time">—</span></div>
+              <div class="receipt-row"><span class="receipt-label">⏱ Expires At</span><span class="receipt-val" id="r-expires">—</span></div>
+              <div class="receipt-row"><span class="receipt-label">💰 Amount</span><span class="receipt-val accent">₱50.00</span></div>
+            </div>
+            <div class="receipt-divider dashed"></div>
+            <div style="text-align:center;">
+              <div style="font-size:0.65rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Your Access PIN</div>
+              <div class="big-pin-row" id="big-pin-row" style="justify-content:center;"></div>
+            </div>
+            <div class="receipt-divider dashed"></div>
+            <div style="font-size:0.72rem;color:var(--muted);text-align:center;line-height:1.7;">
+              Enter this PIN to retrieve your helmet.<br/>
+              <strong style="color:var(--text)">Single-use · Do not share.</strong>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="resetAll()">🏠 Return to Home</button>
+        </div>
+      </div>
+
+      <!-- SCREEN: Retrieve -->
+      <div class="screen" id="screen-retrieve">
+        <div class="screen-title">Retrieve Helmet</div>
+        <div class="screen-sub">Enter your 6-digit PIN to unlock your locker</div>
+        <div class="retrieve-wrap">
+          <div class="pin-keypad-row">
+            <div style="display:flex;flex-direction:column;gap:16px;">
+              <div class="pin-field" id="pin-display-boxes"></div>
+
+              <!-- Error -->
+              <div class="status-box error" id="box-error">
+                <div class="sb-icon">❌</div>
+                <div class="sb-title red">Invalid PIN</div>
+                <div class="sb-sub">PIN not found or already used. Try again.</div>
+              </div>
+
+              <!-- Success -->
+              <div class="status-box success" id="box-success">
+                <div class="sb-icon">🔓</div>
+                <div class="sb-title green">Locker Unlocked!</div>
+                <div class="sb-sub">Please retrieve your helmet now.</div>
+                <div class="sb-badge" id="success-badge">LOCKER #—</div>
+              </div>
+
+              <!-- Overtime -->
+              <div class="status-box overtime" id="box-overtime">
+                <div class="sb-icon">⏰</div>
+                <div class="sb-title orange">Overtime Detected</div>
+                <div class="sb-sub" id="ot-sub">Your rental period has expired.</div>
+                <div class="ot-amount" id="ot-amount">₱0.00</div>
+                <div class="sb-sub">must be paid before retrieving</div>
+                <button class="btn btn-orange" id="btn-pay-overtime" onclick="payOvertime()">Pay Overtime Now →</button>
+              </div>
+
+            </div>
+            <div class="keypad" id="keypad"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <span>Helmlock 4S Version 2.0 · Technological Institute of the Philippines</span>
+  <span id="footer-clock">—</span>
+</div>
+
+<script>
+let selectedLocker  = null;
+let lockerData      = [];
+let retrievePin     = '';
+let currentOtPin    = '';
+let currentOtAmount = 0;
+
+// ── Clock ─────────────────────────────────────────
+function tick() {
+  const t = new Date().toLocaleString('en-PH', {
+    weekday:'short', month:'short', day:'numeric',
+    hour:'2-digit', minute:'2-digit', second:'2-digit'
+  });
+  document.getElementById('clock').textContent        = t;
+  document.getElementById('footer-clock').textContent = t;
+}
+setInterval(tick, 1000); tick();
+
+// ── Spinner ───────────────────────────────────────
+function showSpinner(label='Processing…') {
+  document.getElementById('spinner-label').textContent = label;
+  document.getElementById('spinner').classList.add('show');
+}
+function hideSpinner() {
+  document.getElementById('spinner').classList.remove('show');
+}
+
+// ── Nav ───────────────────────────────────────────
+function switchNav(mode) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('nav-' + mode).classList.add('active');
+  if (mode === 'rent') {
+    showScreen('screen-select');
+  } else {
+    resetRetrieve();
+    showScreen('screen-retrieve');
+  }
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ── Locker Bank ───────────────────────────────────
+async function loadLockers() {
+  try {
+    const res  = await fetch('/api/lockers');
+    lockerData = await res.json();
+  } catch(e) {
+    lockerData = Array.from({length:12}, (_,i) => ({number:i+1, status:'available'}));
+  }
+  renderBank();
+}
+
+function renderBank() {
+  const container = document.getElementById('locker-rows');
+  container.innerHTML = '';
+  for (let r = 0; r < 2; r++) {
+    const rowEl = document.createElement('div');
+    rowEl.className = 'locker-row';
+    for (let c = 0; c < 6; c++) {
+      const l   = lockerData[r * 6 + c];
+      if (!l) continue;
+      const isSel = l.number === selectedLocker;
+      const isOcc = l.status === 'occupied';
+      const cls   = isSel ? 'sel' : (isOcc ? 'occ' : 'avail');
+      const unit  = document.createElement('div');
+      unit.className = `locker-unit ${cls}`;
+      unit.innerHTML = `
+        <div class="door-inner">
+          <div class="door-vents"><div class="vent-line"></div><div class="vent-line"></div><div class="vent-line"></div></div>
+          <div class="door-plate">${l.number}</div>
+          <div class="door-bottom">
+            <div class="door-handle"></div>
+            <div class="door-led"></div>
+          </div>
+          <div class="door-status">${isSel ? 'SELECTED' : (isOcc ? 'OCCUPIED' : 'AVAILABLE')}</div>
+        </div>`;
+      if (!isOcc) unit.addEventListener('click', () => pickLocker(l.number));
+      rowEl.appendChild(unit);
+    }
+    container.appendChild(rowEl);
+  }
+}
+
+function pickLocker(num) {
+  selectedLocker = num;
+  document.getElementById('btn-continue').disabled = false;
+  document.getElementById('selected-info').innerHTML = `Selected: <strong>Locker #${num}</strong>`;
+  renderBank();
+}
+
+// ── Payment ───────────────────────────────────────
+function goToPayment() {
+  if (!selectedLocker) return;
+  document.getElementById('pay-sub').textContent = `Locker #${selectedLocker} · ₱50.00 / hour`;
+  showScreen('screen-payment');
+}
+
+async function selectPayment(method) {
+  if (method !== 'stripe') return;
+  showSpinner('Connecting to payment…');
+  try {
+    const res  = await fetch('/api/create-stripe-session', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({locker_number: selectedLocker}),
+    });
+    const data = await res.json();
+    hideSpinner();
+
+    if (data.error) { alert('Error: ' + data.error); return; }
+
+    if (data.dev_mode) {
+      showPinScreen(data.pin, data.locker, 'stripe', data.rented_at, data.expires_at);
+    } else if (data.url) {
+      window.location.href = data.url;
+    }
+  } catch(e) {
+    hideSpinner();
+    alert('Network error. Please try again.');
+  }
+}
+
+// ── PIN Receipt Screen ─────────────────────────────
+function showPinScreen(pin, locker, method, rented_at, expires_at) {
+  document.getElementById('r-locker').textContent  = '#' + locker;
+  document.getElementById('r-method').textContent  = method === 'stripe' ? 'Cashless (Stripe)' : 'Cash';
+  document.getElementById('r-time').textContent    = rented_at  || '—';
+  document.getElementById('r-expires').textContent = expires_at || '—';
+  const row = document.getElementById('big-pin-row');
+  row.innerHTML = '';
+  String(pin).split('').forEach(d => {
+    const div = document.createElement('div');
+    div.className = 'big-pin-digit';
+    div.textContent = d;
+    row.appendChild(div);
+  });
+  loadLockers();
+  showScreen('screen-pin');
+}
+
+// ── Retrieve Keypad ───────────────────────────────
+function buildKeypad() {
+  const kp = document.getElementById('keypad');
+  kp.innerHTML = '';
+  ['1','2','3','4','5','6','7','8','9','⌫','0','OK'].forEach(k => {
+    const btn = document.createElement('button');
+    btn.className = 'key' + (k==='⌫' ? ' key-del':'') + (k==='OK' ? ' key-ok':'');
+    btn.textContent = k;
+    btn.addEventListener('click', () => handleKey(k));
+    kp.appendChild(btn);
+  });
+}
+
+function buildPinBoxes() {
+  const wrap = document.getElementById('pin-display-boxes');
+  wrap.innerHTML = '';
+  for (let i = 0; i < 6; i++) {
+    const d = document.createElement('div');
+    d.className = 'pin-box' + (i === 0 ? ' cursor' : '');
+    d.id = 'pb' + i;
+    wrap.appendChild(d);
+  }
+}
+
+function updatePinBoxes() {
+  for (let i = 0; i < 6; i++) {
+    const b = document.getElementById('pb' + i);
+    b.className = 'pin-box';
+    if (i < retrievePin.length) {
+      b.textContent = retrievePin[i];
+      b.classList.add('filled');
+    } else {
+      b.textContent = '';
+      if (i === retrievePin.length) b.classList.add('cursor');
+    }
+  }
+}
+
+function hideAllBoxes() {
+  document.getElementById('box-error').classList.remove('show');
+  document.getElementById('box-success').classList.remove('show');
+  document.getElementById('box-overtime').classList.remove('show');
+}
+
+function handleKey(k) {
+  hideAllBoxes();
+  if (k === '⌫') {
+    retrievePin = retrievePin.slice(0, -1);
+  } else if (k === 'OK') {
+    if (retrievePin.length === 6) checkPin();
+    return;
+  } else if (retrievePin.length < 6) {
+    retrievePin += k;
+  }
+  updatePinBoxes();
+  if (retrievePin.length === 6) checkPin();
+}
+
+async function checkPin() {
+  showSpinner('Checking PIN…');
+  try {
+    const res  = await fetch('/api/check-pin', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({pin: retrievePin}),
+    });
+    const data = await res.json();
+    hideSpinner();
+
+    if (!data.ok) {
+      document.getElementById('box-error').classList.add('show');
+      retrievePin = '';
+      updatePinBoxes();
+      return;
+    }
+
+    if (data.is_overtime) {
+      // Show overtime payment screen
+      currentOtPin    = retrievePin;
+      currentOtAmount = data.overtime_amount;
+      document.getElementById('ot-sub').textContent =
+        `${data.overtime_hours} hour${data.overtime_hours > 1 ? 's' : ''} overtime on Locker #${data.locker}`;
+      document.getElementById('ot-amount').textContent = data.overtime_amount_display;
+      document.getElementById('box-overtime').classList.add('show');
+      // Don't clear PIN yet — needed for payment
+    } else {
+      // Within time — unlock immediately
+      await doUnlock(retrievePin, data.locker);
+    }
+
+  } catch(e) {
+    hideSpinner();
+    document.getElementById('box-error').classList.add('show');
+    retrievePin = '';
+    updatePinBoxes();
+  }
+}
+
+async function doUnlock(pin, locker) {
+  showSpinner('Unlocking…');
+  try {
+    const res  = await fetch('/api/unlock', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({pin}),
+    });
+    const data = await res.json();
+    hideSpinner();
+
+    if (data.ok) {
+      document.getElementById('success-badge').textContent = 'LOCKER #' + data.locker;
+      document.getElementById('box-success').classList.add('show');
+      loadLockers();
+      setTimeout(() => resetRetrieve(), 10000);
+    } else {
+      document.getElementById('box-error').classList.add('show');
+    }
+  } catch(e) {
+    hideSpinner();
+    document.getElementById('box-error').classList.add('show');
+  }
+  retrievePin = '';
+  updatePinBoxes();
+}
+
+async function payOvertime() {
+  showSpinner('Connecting to payment…');
+  try {
+    const res  = await fetch('/api/create-overtime-session', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({pin: currentOtPin, amount: currentOtAmount}),
+    });
+    const data = await res.json();
+    hideSpinner();
+
+    if (data.error) { alert('Error: ' + data.error); return; }
+
+    if (data.dev_mode) {
+      // Dev mode — overtime "paid", now unlock
+      await doUnlock(currentOtPin, data.locker);
+      currentOtPin    = '';
+      currentOtAmount = 0;
+    } else if (data.url) {
+      window.location.href = data.url;
+    }
+  } catch(e) {
+    hideSpinner();
+    alert('Network error. Please try again.');
+  }
+}
+
+function resetRetrieve() {
+  retrievePin     = '';
+  currentOtPin    = '';
+  currentOtAmount = 0;
+  hideAllBoxes();
+  buildPinBoxes();
+  updatePinBoxes();
+}
+
+function resetAll() {
+  selectedLocker = null;
+  document.getElementById('btn-continue').disabled     = true;
+  document.getElementById('selected-info').textContent = 'No locker selected';
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('nav-rent').classList.add('active');
+  loadLockers();
+  showScreen('screen-select');
+}
+
+// ── Init ──────────────────────────────────────────
+buildKeypad();
+buildPinBoxes();
+loadLockers();
+
+// Auto-refresh grid every 10s
+setInterval(() => {
+  if (document.getElementById('screen-select').classList.contains('active')) {
+    loadLockers();
+  }
+}, 10000);
+</script>
+</body>
+</html>
