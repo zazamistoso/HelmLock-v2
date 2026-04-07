@@ -59,9 +59,9 @@ def db_set_locker(locker_number: int, status: str) -> bool:
         return False
     try:
         res = sb.table("lockers") \
-            .update({"status": status, "updated_at": now_utc().isoformat()}) \
-            .eq("locker_number", locker_number) \
-            .execute()
+        .update({"status": status}) \
+        .eq("locker_number", int(locker_number)) \
+        .execute() 
         rows = len(res.data) if res.data else 0
         print(f"[DB] Locker #{locker_number} → {status} | rows_updated={rows}")
         if rows == 0:

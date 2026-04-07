@@ -552,7 +552,7 @@ async function checkPin() {
       return;
     }
 
-    if (data.is_overtime) {
+    if (data.is_overtime && !data.overtime_paid) {
       // Show overtime payment screen
       currentOtPin    = retrievePin;
       currentOtAmount = data.overtime_amount;

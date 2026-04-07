@@ -90,11 +90,6 @@ def is_locker_available(locker_number: int) -> bool:
         print(f"[Service] Locker #{locker_number} status={status} available={available}")
         return available
 
-    # Dev fallback
-    _expire_dev()
-    occupied = {v["locker_number"] for v in _dev_store.values() if v["status"] == "active"}
-    return locker_number not in occupied
-
 
 def expire_overdue_sessions():
     """
@@ -125,7 +120,7 @@ def create_rental(locker_number: int, payment_method: str, amount: int, pin: str
     """
     locker_number = int(locker_number)
     rented_at     = now_utc()
-    expires_at    = rented_at + timedelta(hours=SESSION_HOURS)
+    expires_at = rented_at + timedelta(hours=SESSION_HOURS)
 
     from services.db import db_insert_transaction
     ok = db_insert_transaction({
@@ -181,14 +176,15 @@ def check_pin(pin: str) -> dict:
     is_ot, ot_hours, ot_amount = calc_overtime(row["expires_at"])
 
     return {
-        "ok":                    True,
-        "locker":                row["locker_number"],
-        "time_left":             format_time_left(row["expires_at"]) if not is_ot else "Expired",
-        "is_overtime":           is_ot,
-        "overtime_hours":        ot_hours,
-        "overtime_amount":       ot_amount,
-        "overtime_amount_display": f"₱{ot_amount // 100}.00",
-    }
+    "ok":                      True,
+    "locker":                  row["locker_number"],
+    "time_left":               format_time_left(row["expires_at"]) if not is_ot else "Expired",
+    "is_overtime":             is_ot,
+    "overtime_paid":           row.get("overtime_paid", False),  # this line must be here
+    "overtime_hours":          ot_hours,
+    "overtime_amount":         ot_amount,
+    "overtime_amount_display": f"₱{ot_amount // 100}.00",
+}
 
 
 def unlock_locker(pin: str) -> dict:
@@ -197,6 +193,7 @@ def unlock_locker(pin: str) -> dict:
     Frees the locker in DB.
     """
     row = db_get_transaction_by_pin(pin)
+    print(f"[DEBUG] unlock row: {row}")
 
     if not row:
         # Dev fallback
