@@ -120,7 +120,7 @@ def create_rental(locker_number: int, payment_method: str, amount: int, pin: str
     """
     locker_number = int(locker_number)
     rented_at     = now_utc()
-    expires_at = rented_at + timedelta(hours=SESSION_HOURS)
+    expires_at = rented_at + timedelta(hours=SESSION_HOURS) #hours=2 or minutes=1 to test the overtime
 
     from services.db import db_insert_transaction
     ok = db_insert_transaction({
