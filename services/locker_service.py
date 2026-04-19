@@ -24,6 +24,17 @@ def now_utc() -> datetime:
 def parse_dt(s) -> datetime:
     if isinstance(s, datetime):
         return s if s.tzinfo else s.replace(tzinfo=timezone.utc)
+    import re
+    s = str(s).strip()
+    # Replace space separator with T
+    s = s.replace(' ', 'T', 1)
+    # Normalize +00 to +00:00
+    if s.endswith('+00'):
+        s = s + ':00'
+    # Truncate fractional seconds to max 6 digits
+    s = re.sub(r'(\.\d{6})\d+', r'\1', s)
+    # Truncate to 4 digit microseconds → pad to 6
+    s = re.sub(r'\.(\d{1,5})([+-])', lambda m: '.' + m.group(1).ljust(6, '0') + m.group(2), s)
     dt = datetime.fromisoformat(s)
     return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
 
@@ -120,7 +131,7 @@ def create_rental(locker_number: int, payment_method: str, amount: int, pin: str
     """
     locker_number = int(locker_number)
     rented_at     = now_utc()
-    expires_at = rented_at + timedelta(hours=SESSION_HOURS) #hours=2 or minutes=1 to test the overtime
+    expires_at = rented_at + timedelta(minutes=1) # minutes=1 to test the overtime
 
     from services.db import db_insert_transaction
     ok = db_insert_transaction({

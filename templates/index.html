@@ -15,8 +15,6 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;user-select:none;}
 .kiosk{display:grid;grid-template-rows:72px 1fr;height:100vh;}
-
-/* Header */
 .header{display:flex;align-items:center;justify-content:space-between;padding:0 32px;background:var(--surface);border-bottom:1px solid var(--border);}
 .logo{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:0.1em;color:var(--accent);}
 .logo em{color:var(--text);font-style:normal;}
@@ -24,11 +22,7 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
 .live-badge{display:flex;align-items:center;gap:7px;color:var(--green);font-weight:500;}
 .live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:blink 1.8s infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
-
-/* Body */
 .body{display:flex;overflow:hidden;height:100%;}
-
-/* Sidebar */
 .sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:20px 12px;gap:6px;flex-shrink:0;}
 .nav-btn{display:flex;align-items:center;gap:12px;padding:16px 18px;border-radius:12px;border:none;background:transparent;color:var(--muted);font-family:'Barlow',sans-serif;font-size:0.95rem;font-weight:600;cursor:pointer;text-align:left;width:100%;transition:all 0.2s;}
 .nav-btn:hover{background:var(--panel);color:var(--text);}
@@ -38,23 +32,15 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
 .sidebar-info{padding:14px 18px;font-size:0.72rem;color:var(--muted);line-height:1.7;}
 .sidebar-info-title{color:var(--text);font-weight:600;font-size:0.78rem;margin-bottom:4px;}
 .sidebar-price{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--accent);letter-spacing:0.05em;}
-
-/* Content */
 .content{flex:1;overflow:hidden;position:relative;}
-
-/* Screens */
 .screen{position:absolute;inset:0;padding:28px 36px;display:none;flex-direction:column;overflow:hidden;animation:slideIn 0.3s ease;}
 .screen.active{display:flex;}
 @keyframes slideIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}
 .screen-title{font-family:'Bebas Neue',sans-serif;font-size:2.6rem;letter-spacing:0.06em;line-height:1;}
 .screen-sub{font-size:0.88rem;color:var(--muted);margin-top:5px;margin-bottom:22px;}
-
-/* Action bar */
 .action-bar{display:flex;align-items:center;gap:16px;padding-top:18px;flex-shrink:0;border-top:1px solid var(--border);margin-top:auto;}
 .selected-info{font-size:0.85rem;color:var(--muted);flex:1;}
 .selected-info strong{color:var(--accent);}
-
-/* Buttons */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:0 36px;height:56px;border-radius:12px;border:none;font-family:'Barlow',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;letter-spacing:0.03em;transition:all 0.18s;}
 .btn-primary{background:var(--accent);color:#0a0b0d;}
 .btn-primary:hover:not(:disabled){background:#ffd220;transform:translateY(-1px);}
@@ -63,8 +49,6 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
 .btn-ghost:hover{border-color:var(--muted);color:var(--text);}
 .btn-orange{background:var(--orange);color:#fff;}
 .btn-orange:hover{background:#e07a00;}
-
-/* Locker Bank */
 .locker-bank-wrap{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;}
 .locker-cabinet{background:linear-gradient(160deg,#1e2330 0%,#161b27 100%);border:3px solid #2c3347;border-bottom:5px solid #0d0f14;border-radius:12px;padding:16px 16px 22px;box-shadow:8px 8px 0 #0a0c10,inset 0 1px 0 rgba(255,255,255,0.06);}
 .cabinet-label{text-align:center;font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.22em;color:var(--muted);margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #2c3347;}
@@ -95,16 +79,13 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
 .locker-legend{display:flex;gap:20px;justify-content:center;margin-top:14px;}
 .legend-item{display:flex;align-items:center;gap:7px;font-size:0.75rem;color:var(--muted);}
 .legend-dot{width:9px;height:9px;border-radius:50%;}
-
-/* Payment */
 .pay-options{display:flex;gap:20px;flex:1;align-items:stretch;}
 .pay-card{flex:1;max-width:300px;background:var(--panel);border:2px solid var(--border);border-radius:20px;padding:36px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;cursor:pointer;transition:all 0.2s;align-self:stretch;}
 .pay-card:hover{border-color:var(--accent);transform:translateY(-4px);box-shadow:0 12px 32px rgba(245,196,0,0.15);}
+.pay-card.ot-card:hover{border-color:var(--orange);box-shadow:0 12px 32px rgba(255,140,0,0.15);}
 .pay-icon{font-size:3.2rem;}
 .pay-name{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:0.06em;}
 .pay-desc{font-size:0.82rem;color:var(--muted);text-align:center;line-height:1.5;}
-
-/* QR Screen */
 .qr-wrap{flex:1;display:flex;align-items:center;justify-content:center;gap:48px;}
 .qr-left{display:flex;flex-direction:column;align-items:center;gap:16px;}
 .qr-box{background:#ffffff;padding:16px;border-radius:16px;box-shadow:0 0 40px rgba(245,196,0,0.15);}
@@ -118,14 +99,13 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
 .qr-info-label{color:var(--muted);}
 .qr-info-val{font-family:'DM Mono',monospace;font-weight:500;}
 .qr-info-val.accent{color:var(--accent);font-size:0.95rem;}
+.qr-info-val.orange{color:var(--orange);font-size:0.95rem;}
 .qr-divider{height:1px;background:var(--border);}
 .qr-status{display:flex;align-items:center;gap:10px;font-size:0.82rem;color:var(--muted);}
 .qr-status-dot{width:8px;height:8px;border-radius:50%;background:var(--orange);box-shadow:0 0 8px var(--orange);animation:blink 1.2s infinite;flex-shrink:0;}
 .qr-steps{display:flex;flex-direction:column;gap:8px;}
 .qr-step{display:flex;align-items:flex-start;gap:10px;font-size:0.78rem;color:var(--muted);line-height:1.5;}
 .qr-step-num{width:20px;height:20px;border-radius:50%;background:rgba(245,196,0,0.15);border:1px solid rgba(245,196,0,0.3);color:var(--accent);font-family:'Bebas Neue',sans-serif;font-size:0.75rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
-
-/* Cash / Coin Screen */
 .cash-wrap{flex:1;display:flex;align-items:center;justify-content:center;gap:48px;}
 .cash-left{display:flex;flex-direction:column;align-items:center;gap:20px;}
 .cash-icon-ring{width:120px;height:120px;border-radius:50%;background:rgba(0,224,122,0.06);border:2px solid rgba(0,224,122,0.2);display:flex;align-items:center;justify-content:center;font-size:3.5rem;animation:cashPulse 2s infinite;}
@@ -136,8 +116,6 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
 .cash-right{display:flex;flex-direction:column;gap:16px;max-width:280px;}
 .cash-progress-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden;width:100%;}
 .cash-progress-fill{height:100%;background:var(--green);border-radius:4px;transition:width 0.4s ease;}
-
-/* NFC / Stored Value Card Screen */
 .nfc-wrap{flex:1;display:flex;align-items:center;justify-content:center;gap:48px;}
 .nfc-left{display:flex;flex-direction:column;align-items:center;gap:20px;}
 .nfc-tap-ring{width:160px;height:160px;border-radius:50%;background:rgba(168,85,247,0.06);border:2px solid rgba(168,85,247,0.3);display:flex;align-items:center;justify-content:center;font-size:4rem;position:relative;animation:nfcPulse 1.8s infinite;}
@@ -155,8 +133,6 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
 .nfc-status{display:flex;align-items:center;gap:10px;font-size:0.82rem;color:var(--muted);}
 .nfc-status-dot{width:8px;height:8px;border-radius:50%;background:var(--purple);box-shadow:0 0 8px var(--purple);animation:blink 1.2s infinite;flex-shrink:0;}
 .nfc-step-num{width:20px;height:20px;border-radius:50%;background:rgba(168,85,247,0.15);border:1px solid rgba(168,85,247,0.3);color:var(--purple);font-family:'Bebas Neue',sans-serif;font-size:0.75rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
-
-/* NFC Success Screen */
 .nfc-success-wrap{flex:1;display:flex;align-items:center;justify-content:center;}
 .nfc-success-card{background:var(--panel);border:1.5px solid rgba(168,85,247,0.3);border-radius:24px;padding:48px 56px;display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center;max-width:480px;}
 .nfc-success-ring{width:100px;height:100px;border-radius:50%;background:rgba(168,85,247,0.08);border:2px solid rgba(168,85,247,0.3);display:flex;align-items:center;justify-content:center;font-size:3rem;animation:popIn 0.4s cubic-bezier(0.175,0.885,0.32,1.275);}
@@ -170,8 +146,6 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
 .nfc-receipt-row{display:flex;justify-content:space-between;font-size:0.85rem;}
 .nfc-receipt-label{color:var(--muted);}
 .nfc-receipt-val{font-family:'DM Mono',monospace;font-weight:500;font-size:0.82rem;}
-
-/* Receipt (PIN) */
 .pin-result-wrap{display:flex;flex-direction:column;gap:20px;flex:1;justify-content:center;align-items:flex-start;}
 .big-pin-row{display:flex;gap:10px;}
 .big-pin-digit{width:56px;height:72px;background:var(--bg);border:2px solid var(--accent);border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:2.4rem;color:var(--accent);box-shadow:0 0 16px rgba(245,196,0,0.2);}
@@ -187,8 +161,6 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
 .receipt-label{color:var(--muted);}
 .receipt-val{font-family:'DM Mono',monospace;font-weight:500;font-size:0.82rem;}
 .receipt-val.accent{color:var(--accent);font-size:0.95rem;font-weight:600;}
-
-/* Retrieve */
 .retrieve-wrap{display:flex;flex-direction:column;gap:20px;flex:1;justify-content:center;}
 .retrieve-method-select{display:flex;gap:12px;margin-bottom:8px;}
 .method-btn{flex:1;padding:14px 16px;border-radius:12px;border:2px solid var(--border);background:var(--panel);color:var(--muted);font-family:'Barlow',sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
@@ -208,14 +180,10 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
 .key.key-del{font-size:1.2rem;color:var(--muted);}
 .key.key-ok{background:var(--accent);color:#0a0b0d;border-color:var(--accent);font-family:'Barlow',sans-serif;font-size:1rem;font-weight:700;}
 .key.key-ok:hover{background:#ffd220;}
-
-/* NFC Retrieve Panel */
 .nfc-retrieve-panel{display:flex;flex-direction:column;align-items:center;gap:20px;padding:28px;background:var(--panel);border:1.5px solid rgba(168,85,247,0.3);border-radius:20px;min-width:320px;}
 .nfc-retrieve-ring{width:120px;height:120px;border-radius:50%;background:rgba(168,85,247,0.08);border:2px solid rgba(168,85,247,0.3);display:flex;align-items:center;justify-content:center;font-size:3rem;animation:nfcPulse 1.8s infinite;}
 .nfc-retrieve-title{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--purple);letter-spacing:0.06em;}
 .nfc-retrieve-sub{font-size:0.82rem;color:var(--muted);text-align:center;line-height:1.6;max-width:240px;}
-
-/* Status boxes */
 .status-box{border-radius:20px;padding:24px 28px;display:none;flex-direction:column;align-items:center;gap:12px;text-align:center;width:100%;max-width:420px;}
 .status-box.show{display:flex;}
 .status-box.error{background:rgba(255,59,85,0.07);border:2px solid rgba(255,59,85,0.3);}
@@ -229,15 +197,11 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
 .sb-sub{color:var(--muted);font-size:0.85rem;line-height:1.6;}
 .sb-badge{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;background:var(--accent);color:#0a0b0d;padding:6px 20px;border-radius:8px;letter-spacing:0.1em;}
 .ot-amount{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;color:var(--orange);}
-
-/* Spinner */
 .spinner-overlay{position:fixed;inset:0;background:rgba(8,9,11,0.8);display:none;align-items:center;justify-content:center;z-index:100;flex-direction:column;gap:16px;}
 .spinner-overlay.show{display:flex;}
 .spinner{width:48px;height:48px;border:4px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
 .spinner-label{font-family:'DM Mono',monospace;font-size:0.8rem;color:var(--muted);}
-
-/* Footer */
 .footer{position:fixed;bottom:0;left:0;right:0;height:36px;background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px;font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--muted);z-index:10;}
 </style>
 </head>
@@ -304,7 +268,7 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
         </div>
       </div>
 
-      <!-- SCREEN: Payment Method -->
+      <!-- SCREEN: Payment Method (rental) -->
       <div class="screen" id="screen-payment">
         <div class="screen-title">Choose Payment</div>
         <div class="screen-sub" id="pay-sub">Locker #— · ₱50.00 / hour</div>
@@ -330,10 +294,36 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
         </div>
       </div>
 
-      <!-- SCREEN: QR Code -->
+      <!-- SCREEN: Overtime Payment Method -->
+      <div class="screen" id="screen-overtime-payment">
+        <div class="screen-title">Pay Overtime</div>
+        <div class="screen-sub" id="ot-pay-sub">₱0.00 overtime due · choose payment method</div>
+        <div class="pay-options">
+          <div class="pay-card ot-card" onclick="selectOvertimePayment('cash')">
+            <div class="pay-icon">🪙</div>
+            <div class="pay-name">Coins</div>
+            <div class="pay-desc">Insert coins into<br/>the acceptor</div>
+          </div>
+          <div class="pay-card ot-card" onclick="selectOvertimePayment('stripe')">
+            <div class="pay-icon">📲</div>
+            <div class="pay-name">QR Payment</div>
+            <div class="pay-desc">Scan with GCash, Maya,<br/>Card, or any e-wallet</div>
+          </div>
+          <div class="pay-card ot-card" onclick="selectOvertimePayment('nfc')">
+            <div class="pay-icon">📡</div>
+            <div class="pay-name">Stored Value Card</div>
+            <div class="pay-desc">Tap your HelmLock card<br/>on the reader</div>
+          </div>
+        </div>
+        <div class="action-bar">
+          <button class="btn btn-ghost" onclick="showScreen('screen-retrieve')">← Back</button>
+        </div>
+      </div>
+
+      <!-- SCREEN: QR Code (rental + overtime) -->
       <div class="screen" id="screen-qr">
-        <div class="screen-title">Scan to Pay</div>
-        <div class="screen-sub">Use GCash, Maya, card, or any e-wallet · ₱50.00</div>
+        <div class="screen-title" id="qr-screen-title">Scan to Pay</div>
+        <div class="screen-sub" id="qr-screen-sub">Use GCash, Maya, card, or any e-wallet</div>
         <div class="qr-wrap">
           <div class="qr-left">
             <div class="qr-box" id="qr-code-box"></div>
@@ -348,7 +338,7 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
           <div class="qr-right">
             <div class="qr-info-card">
               <div class="qr-info-row"><span class="qr-info-label">🔒 Locker</span><span class="qr-info-val" id="qr-locker">#—</span></div>
-              <div class="qr-info-row"><span class="qr-info-label">💰 Amount</span><span class="qr-info-val accent">₱50.00</span></div>
+              <div class="qr-info-row"><span class="qr-info-label">💰 Amount</span><span class="qr-info-val" id="qr-amount" class="accent">₱50.00</span></div>
               <div class="qr-divider"></div>
               <div class="qr-status">
                 <div class="qr-status-dot" id="qr-status-dot"></div>
@@ -358,17 +348,17 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
             <div class="qr-steps">
               <div class="qr-step"><div class="qr-step-num">1</div>Open GCash, Maya, or your banking app</div>
               <div class="qr-step"><div class="qr-step-num">2</div>Tap "Scan QR" and point at the code</div>
-              <div class="qr-step"><div class="qr-step-num">3</div>Confirm the ₱50.00 payment</div>
-              <div class="qr-step"><div class="qr-step-num">4</div>Your PIN will appear on this screen automatically</div>
+              <div class="qr-step"><div class="qr-step-num">3</div>Confirm the payment amount</div>
+              <div class="qr-step"><div class="qr-step-num">4</div>This screen updates automatically when paid</div>
             </div>
-            <button class="btn btn-ghost" onclick="cancelQR()">✕ Cancel</button>
+            <button class="btn btn-ghost" id="qr-cancel-btn" onclick="cancelQR()">✕ Cancel</button>
           </div>
         </div>
       </div>
 
       <!-- SCREEN: Coin Payment -->
       <div class="screen" id="screen-cash">
-        <div class="screen-title">Coin Payment</div>
+        <div class="screen-title" id="cash-screen-title">Coin Payment</div>
         <div class="screen-sub">Insert coins into the acceptor · <span id="cash-locker-label">Locker #—</span></div>
         <div class="cash-wrap">
           <div class="cash-left">
@@ -388,7 +378,7 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
           <div class="cash-right">
             <div class="qr-info-card">
               <div class="qr-info-row"><span class="qr-info-label">🔒 Locker</span><span class="qr-info-val" id="cash-locker-val">#—</span></div>
-              <div class="qr-info-row"><span class="qr-info-label">💰 Required</span><span class="qr-info-val accent">₱50.00 exact</span></div>
+              <div class="qr-info-row"><span class="qr-info-label">💰 Required</span><span class="qr-info-val" id="cash-required-display" style="color:var(--accent);">₱50.00 exact</span></div>
               <div class="qr-divider"></div>
               <div class="cash-progress-bar"><div class="cash-progress-fill" id="cash-progress-fill" style="width:0%"></div></div>
               <div class="qr-status">
@@ -401,8 +391,8 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
             </div>
             <div class="qr-steps">
               <div class="qr-step"><div class="qr-step-num">1</div>Insert ₱1, ₱5, ₱10, or ₱20 coins</div>
-              <div class="qr-step"><div class="qr-step-num">2</div>Exact ₱50.00 required — no change dispensed</div>
-              <div class="qr-step"><div class="qr-step-num">3</div>PIN appears automatically once ₱50 is reached</div>
+              <div class="qr-step"><div class="qr-step-num">2</div>Exact amount required — no change dispensed</div>
+              <div class="qr-step"><div class="qr-step-num">3</div>Screen updates automatically when paid</div>
             </div>
             <button class="btn btn-ghost" onclick="cancelCash()">✕ Cancel</button>
           </div>
@@ -441,7 +431,7 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
         </div>
       </div>
 
-      <!-- SCREEN: NFC Payment Success (no PIN — use card to retrieve) -->
+      <!-- SCREEN: NFC Payment Success -->
       <div class="screen" id="screen-nfc-success">
         <div class="screen-title">Payment Confirmed</div>
         <div class="screen-sub">Your locker is locked — use your card to retrieve</div>
@@ -469,7 +459,7 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
         </div>
       </div>
 
-      <!-- SCREEN: PIN Receipt (for Cash and QR) -->
+      <!-- SCREEN: PIN Receipt (Cash + QR) -->
       <div class="screen" id="screen-pin">
         <div class="screen-title">Payment Confirmed</div>
         <div class="screen-sub">Your locker is locked — keep this PIN safe</div>
@@ -532,9 +522,11 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
                   <div class="sb-icon">⏰</div>
                   <div class="sb-title orange">Overtime Detected</div>
                   <div class="sb-sub" id="ot-sub">Your rental period has expired.</div>
-                  <div class="ot-amount" id="ot-amount">₱0.00</div>
+                  <div class="ot-amount" id="ot-amount-display">₱0.00</div>
                   <div class="sb-sub">must be paid before retrieving</div>
-                  <button class="btn btn-orange" onclick="payOvertime()">Pay Overtime Now →</button>
+                  <button class="btn btn-orange" style="margin-top:4px;" onclick="goToOvertimePayment()">
+                    💳 Pay Overtime →
+                  </button>
                 </div>
               </div>
               <div class="keypad" id="keypad"></div>
@@ -565,14 +557,15 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
                   <div class="sb-title red">Card Error</div>
                   <div class="sb-sub" id="nfc-error-msg">Card not recognized or no active rental.</div>
                 </div>
-                <!-- NFC Overtime -->
                 <div class="status-box overtime" id="nfc-box-overtime" style="max-width:100%;">
                   <div class="sb-icon">⏰</div>
                   <div class="sb-title orange">Overtime Detected</div>
                   <div class="sb-sub" id="nfc-ot-sub">Your rental period has expired.</div>
                   <div class="ot-amount" id="nfc-ot-amount">₱0.00</div>
-                  <div class="sb-sub">Pay overtime to retrieve your helmet</div>
-                  <button class="btn btn-orange" onclick="payNfcOvertime()">Pay Overtime Now →</button>
+                  <div class="sb-sub">must be paid before retrieving</div>
+                  <button class="btn btn-orange" style="margin-top:4px;" onclick="goToNfcOvertimePayment()">
+                    💳 Pay Overtime →
+                  </button>
                 </div>
               </div>
             </div>
@@ -596,11 +589,13 @@ let lockerData        = [];
 let retrievePin       = '';
 let currentOtPin      = '';
 let currentOtAmount   = 0;
-let currentNfcOtPin   = '';  // PIN for NFC overtime payment
+let currentNfcOtPin   = '';
+let currentQrMode     = 'rental';  // 'rental' or 'overtime'
 let stripeCheckoutUrl = '';
 let qrPollingTimer    = null;
 let cashSessionId     = null;
 let cashPollingTimer  = null;
+let cashMode          = 'rental';  // 'rental' or 'overtime'
 
 // ── Clock ─────────────────────────────────────────
 function tick() {
@@ -651,6 +646,32 @@ function switchRetrieveMethod(method) {
   document.getElementById('nfc-box-overtime').classList.remove('show');
 }
 
+// ── Overtime Payment Navigation ───────────────────
+function goToOvertimePayment() {
+  // Show overtime payment selection screen
+  const amountDisplay = `₱${currentOtAmount / 100}.00`;
+  document.getElementById('ot-pay-sub').textContent = `${amountDisplay} overtime due · choose payment method`;
+  showScreen('screen-overtime-payment');
+}
+
+function goToNfcOvertimePayment() {
+  // For NFC retrieval overtime — use the internal pin stored during NFC tap
+  currentOtPin = currentNfcOtPin;
+  goToOvertimePayment();
+}
+
+async function selectOvertimePayment(method) {
+  if (!currentOtPin) { alert('Session expired. Please try again.'); showScreen('screen-retrieve'); return; }
+
+  if (method === 'stripe') {
+    await startOvertimeQR();
+  } else if (method === 'cash') {
+    await startOvertimeCash();
+  } else if (method === 'nfc') {
+    startOvertimeNfc();
+  }
+}
+
 // ── Locker Bank ───────────────────────────────────
 async function loadLockers() {
   try {
@@ -697,7 +718,7 @@ function pickLocker(num) {
   renderBank();
 }
 
-// ── Payment ───────────────────────────────────────
+// ── Rental Payment ────────────────────────────────
 function goToPayment() {
   if (!selectedLocker) return;
   document.getElementById('pay-sub').textContent = `Locker #${selectedLocker} · ₱50.00 / hour`;
@@ -706,11 +727,11 @@ function goToPayment() {
 
 async function selectPayment(method) {
   if (method === 'stripe')    await startStripePayment();
-  else if (method === 'cash') await startCashPayment();
+  else if (method === 'cash') await startCashPayment('rental');
   else if (method === 'nfc')  startNfcPayment();
 }
 
-// ── Stripe / QR ───────────────────────────────────
+// ── Stripe / QR Rental ───────────────────────────
 async function startStripePayment() {
   showSpinner('Generating QR code…');
   try {
@@ -724,15 +745,42 @@ async function startStripePayment() {
     if (data.dev_mode) {
       showPinScreen(data.pin, data.locker, 'QR Payment', data.rented_at, data.expires_at);
     } else if (data.url) {
-      stripeCheckoutUrl = data.url;
-      showQRScreen(data.url);
-      startPolling(data.session_id);
+      currentQrMode = 'rental';
+      showQRScreen(data.url, 'Scan to Pay', `₱50.00 · Locker #${selectedLocker}`, '₱50.00', selectedLocker);
+      startQrPolling(data.session_id, 'rental');
     }
   } catch(e) { hideSpinner(); alert('Network error. Please try again.'); }
 }
 
-function showQRScreen(url) {
-  document.getElementById('qr-locker').textContent = '#' + selectedLocker;
+// ── Stripe / QR Overtime ─────────────────────────
+async function startOvertimeQR() {
+  showSpinner('Generating QR code…');
+  try {
+    const res  = await fetch('/api/create-overtime-session', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({pin: currentOtPin}),
+    });
+    const data = await res.json();
+    hideSpinner();
+    if (data.error) { alert('Error: ' + data.error); return; }
+    if (data.dev_mode) {
+      // Dev mode — overtime already marked paid, unlock now
+      await doUnlock(currentOtPin);
+      currentOtPin = ''; currentOtAmount = 0;
+    } else if (data.url) {
+      currentQrMode = 'overtime';
+      const amtDisplay = `₱${currentOtAmount / 100}.00`;
+      showQRScreen(data.url, 'Pay Overtime', `${amtDisplay} due`, amtDisplay, null);
+      startQrPolling(data.session_id, 'overtime');
+    }
+  } catch(e) { hideSpinner(); alert('Network error. Please try again.'); }
+}
+
+function showQRScreen(url, title, sub, amountDisplay, locker) {
+  document.getElementById('qr-screen-title').textContent = title;
+  document.getElementById('qr-screen-sub').textContent   = sub;
+  document.getElementById('qr-locker').textContent       = locker ? `#${locker}` : '—';
+  document.getElementById('qr-amount').textContent       = amountDisplay;
   const box = document.getElementById('qr-code-box');
   box.innerHTML = '';
   new QRCode(box, { text: url, width: 200, height: 200, colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
@@ -745,10 +793,14 @@ function showQRScreen(url) {
 function cancelQR() {
   if (qrPollingTimer) { clearInterval(qrPollingTimer); qrPollingTimer = null; }
   stripeCheckoutUrl = '';
-  showScreen('screen-payment');
+  if (currentQrMode === 'overtime') {
+    showScreen('screen-overtime-payment');
+  } else {
+    showScreen('screen-payment');
+  }
 }
 
-function startPolling(sessionId) {
+function startQrPolling(sessionId, mode) {
   if (qrPollingTimer) clearInterval(qrPollingTimer);
   qrPollingTimer = setInterval(async () => {
     try {
@@ -756,37 +808,55 @@ function startPolling(sessionId) {
       const data = await res.json();
       if (data.status === 'paid') {
         clearInterval(qrPollingTimer); qrPollingTimer = null;
-        showPinScreen(data.pin, data.locker, 'QR Payment', data.rented_at, data.expires_at);
+        if (data.type === 'overtime' || mode === 'overtime') {
+          // Overtime paid — unlock now
+          await doUnlock(data.pin || currentOtPin);
+          currentOtPin = ''; currentOtAmount = 0;
+        } else {
+          // Rental paid — show PIN
+          showPinScreen(data.pin, data.locker, 'QR Payment', data.rented_at, data.expires_at);
+        }
       }
-    } catch(e) { console.error('Polling error:', e); }
+    } catch(e) { console.error('QR polling error:', e); }
   }, 3000);
 }
 
-// ── Coin Payment ──────────────────────────────────
-async function startCashPayment() {
+// ── Coin Payment (rental + overtime) ─────────────
+async function startCashPayment(mode) {
+  cashMode = mode || 'rental';
+  const targetAmount = cashMode === 'overtime' ? currentOtAmount : 5000;
+  const amountDisplay = `₱${targetAmount / 100}.00`;
+
   showSpinner('Starting coin session…');
   try {
     const res  = await fetch('/api/cash-start', {
       method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({locker_number: selectedLocker}),
+      body: JSON.stringify({locker_number: selectedLocker || 0}),
     });
     const data = await res.json();
     hideSpinner();
     if (!data.ok) { alert('Error: ' + data.error); return; }
     cashSessionId = data.session_id;
-    document.getElementById('cash-locker-label').textContent     = `Locker #${selectedLocker}`;
-    document.getElementById('cash-locker-val').textContent       = `#${selectedLocker}`;
-    document.getElementById('cash-inserted-display').textContent = '₱0.00';
-    document.getElementById('cash-remaining-display').textContent = '₱50.00 remaining';
-    document.getElementById('cash-progress-fill').style.width    = '0%';
-    document.getElementById('cash-status-text').textContent      = 'Waiting for coins…';
-    document.getElementById('cash-overpay-box').style.display    = 'none';
+
+    document.getElementById('cash-screen-title').textContent      = cashMode === 'overtime' ? 'Coin Overtime Payment' : 'Coin Payment';
+    document.getElementById('cash-locker-label').textContent       = selectedLocker ? `Locker #${selectedLocker}` : '—';
+    document.getElementById('cash-locker-val').textContent         = selectedLocker ? `#${selectedLocker}` : '—';
+    document.getElementById('cash-required-display').textContent   = `${amountDisplay} exact`;
+    document.getElementById('cash-inserted-display').textContent   = '₱0.00';
+    document.getElementById('cash-remaining-display').textContent  = `${amountDisplay} remaining`;
+    document.getElementById('cash-progress-fill').style.width      = '0%';
+    document.getElementById('cash-status-text').textContent        = 'Waiting for coins…';
+    document.getElementById('cash-overpay-box').style.display      = 'none';
     showScreen('screen-cash');
-    startCashPolling(data.session_id);
+    startCashPolling(data.session_id, targetAmount);
   } catch(e) { hideSpinner(); alert('Network error. Please try again.'); }
 }
 
-function startCashPolling(sessionId) {
+async function startOvertimeCash() {
+  await startCashPayment('overtime');
+}
+
+function startCashPolling(sessionId, targetAmount) {
   if (cashPollingTimer) clearInterval(cashPollingTimer);
   cashPollingTimer = setInterval(async () => {
     try {
@@ -794,8 +864,8 @@ function startCashPolling(sessionId) {
       const data = await res.json();
       if (!data.ok) return;
       const inserted  = data.inserted  || 0;
-      const remaining = data.remaining || 5000;
-      const pct = Math.min(100, (inserted / 5000) * 100);
+      const remaining = data.remaining || targetAmount;
+      const pct = Math.min(100, (inserted / targetAmount) * 100);
       document.getElementById('cash-inserted-display').textContent  = `₱${inserted / 100}.00`;
       document.getElementById('cash-remaining-display').textContent =
         remaining > 0 ? `₱${remaining / 100}.00 remaining` : 'Exact amount reached!';
@@ -808,7 +878,13 @@ function startCashPolling(sessionId) {
       }
       if (data.status === 'complete' && data.pin) {
         clearInterval(cashPollingTimer); cashPollingTimer = null;
-        showPinScreen(data.pin, data.locker, 'Coins', null, null);
+        if (cashMode === 'overtime') {
+          // Coin overtime paid — unlock now
+          await doUnlock(currentOtPin);
+          currentOtPin = ''; currentOtAmount = 0;
+        } else {
+          showPinScreen(data.pin, data.locker, 'Coins', null, null);
+        }
       }
     } catch(e) { console.error('Cash polling error:', e); }
   }, 1000);
@@ -818,7 +894,11 @@ function cancelCash() {
   if (cashPollingTimer) { clearInterval(cashPollingTimer); cashPollingTimer = null; }
   cashSessionId = null;
   document.getElementById('cash-overpay-box').style.display = 'none';
-  showScreen('screen-payment');
+  if (cashMode === 'overtime') {
+    showScreen('screen-overtime-payment');
+  } else {
+    showScreen('screen-payment');
+  }
 }
 
 // ── Stored Value Card Payment ─────────────────────
@@ -828,16 +908,27 @@ function startNfcPayment() {
   document.getElementById('nfc-balance-display').textContent  = '—';
   document.getElementById('nfc-pay-status-text').textContent  = 'Waiting for card tap…';
   showScreen('screen-nfc-pay');
-  // Hardware team: POST { card_uid, locker_number } to /api/nfc-scan-payment
+  // Hardware team: POST { card_uid, locker_number } to /api/hardware/nfc-tapped with mode="payment"
   // On response call: handleNfcPaymentResult(data)
 }
 
-function cancelNfcPay() { showScreen('screen-payment'); }
+function startOvertimeNfc() {
+  // NFC overtime — show NFC screen in overtime mode
+  document.getElementById('nfc-pay-locker-label').textContent = '—';
+  document.getElementById('nfc-pay-locker-val').textContent   = '—';
+  document.getElementById('nfc-balance-display').textContent  = '—';
+  document.getElementById('nfc-pay-status-text').textContent  = 'Waiting for card tap for overtime payment…';
+  showScreen('screen-nfc-pay');
+  // Hardware team: POST { card_uid, pin: currentOtPin } to /api/nfc-overtime-payment
+  // On success call: handleNfcOvertimePaid()
+}
 
-// Called by hardware after NFC tap during payment
+function cancelNfcPay() {
+  showScreen('screen-payment');
+}
+
 function handleNfcPaymentResult(data) {
   if (data.ok) {
-    // Show NFC success screen — no PIN, card is the key
     document.getElementById('nfc-success-locker').textContent  = '#' + data.locker;
     document.getElementById('nfc-success-rented').textContent  = data.rented_at  || '—';
     document.getElementById('nfc-success-expires').textContent = data.expires_at || '—';
@@ -848,11 +939,13 @@ function handleNfcPaymentResult(data) {
   }
 }
 
-// Called by hardware after NFC tap during retrieval
+async function handleNfcOvertimePaid() {
+  await doUnlock(currentOtPin);
+  currentOtPin = ''; currentOtAmount = 0;
+}
+
 function handleNfcRetrievalResult(data) {
   document.getElementById('nfc-retrieve-status').textContent = data.ok ? 'Card recognized!' : 'Card error.';
-
-  // Hide all NFC status boxes first
   document.getElementById('nfc-box-success').classList.remove('show');
   document.getElementById('nfc-box-error').classList.remove('show');
   document.getElementById('nfc-box-overtime').classList.remove('show');
@@ -866,8 +959,9 @@ function handleNfcRetrievalResult(data) {
       document.getElementById('nfc-retrieve-status').textContent = 'Waiting for card tap…';
     }, 10000);
   } else if (data.is_overtime) {
-    // Overtime detected on card tap
-    currentNfcOtPin = data.pin;  // internal PIN for overtime payment
+    currentNfcOtPin   = data.pin;
+    currentOtPin      = data.pin;
+    currentOtAmount   = data.overtime_amount;
     document.getElementById('nfc-ot-sub').textContent =
       `${data.overtime_hours} hour${data.overtime_hours > 1 ? 's' : ''} overtime on Locker #${data.locker}`;
     document.getElementById('nfc-ot-amount').textContent = data.overtime_amount_display;
@@ -882,28 +976,7 @@ function handleNfcRetrievalResult(data) {
   }
 }
 
-// NFC overtime payment — uses QR payment screen
-async function payNfcOvertime() {
-  if (!currentNfcOtPin) return;
-  showSpinner('Connecting to payment…');
-  try {
-    const res  = await fetch('/api/create-overtime-session', {
-      method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({pin: currentNfcOtPin}),
-    });
-    const data = await res.json();
-    hideSpinner();
-    if (data.error) { alert('Error: ' + data.error); return; }
-    if (data.dev_mode) {
-      await doUnlock(currentNfcOtPin, null);
-      currentNfcOtPin = '';
-    } else if (data.url) {
-      showQRScreen(data.url);
-    }
-  } catch(e) { hideSpinner(); alert('Network error. Please try again.'); }
-}
-
-// ── PIN Receipt (Cash + QR) ───────────────────────
+// ── PIN Receipt ───────────────────────────────────
 function showPinScreen(pin, locker, method, rented_at, expires_at) {
   document.getElementById('r-locker').textContent  = '#' + locker;
   document.getElementById('r-method').textContent  = method || 'Payment';
@@ -987,10 +1060,10 @@ async function checkPin() {
       currentOtAmount = data.overtime_amount;
       document.getElementById('ot-sub').textContent =
         `${data.overtime_hours} hour${data.overtime_hours > 1 ? 's' : ''} overtime on Locker #${data.locker}`;
-      document.getElementById('ot-amount').textContent = data.overtime_amount_display;
+      document.getElementById('ot-amount-display').textContent = data.overtime_amount_display;
       document.getElementById('box-overtime').classList.add('show');
     } else {
-      await doUnlock(retrievePin, data.locker);
+      await doUnlock(retrievePin);
     }
   } catch(e) {
     hideSpinner();
@@ -999,7 +1072,7 @@ async function checkPin() {
   }
 }
 
-async function doUnlock(pin, locker) {
+async function doUnlock(pin) {
   showSpinner('Unlocking…');
   try {
     const res  = await fetch('/api/unlock', {
@@ -1009,33 +1082,23 @@ async function doUnlock(pin, locker) {
     const data = await res.json();
     hideSpinner();
     if (data.ok) {
+      // Show success on retrieve screen
+      showScreen('screen-retrieve');
+      switchRetrieveMethod('pin');
       document.getElementById('success-badge').textContent = 'LOCKER #' + data.locker;
       document.getElementById('box-success').classList.add('show');
       loadLockers();
       setTimeout(() => resetRetrieve(), 10000);
-    } else { document.getElementById('box-error').classList.add('show'); }
-  } catch(e) { hideSpinner(); document.getElementById('box-error').classList.add('show'); }
-  retrievePin = ''; updatePinBoxes();
-}
-
-async function payOvertime() {
-  showSpinner('Connecting to payment…');
-  try {
-    const res  = await fetch('/api/create-overtime-session', {
-      method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({pin: currentOtPin, amount: currentOtAmount}),
-    });
-    const data = await res.json();
-    hideSpinner();
-    if (data.error) { alert('Error: ' + data.error); return; }
-    if (data.dev_mode) {
-      await doUnlock(currentOtPin, data.locker);
-      currentOtPin = ''; currentOtAmount = 0;
-    } else if (data.url) {
-      stripeCheckoutUrl = data.url;
-      showQRScreen(data.url);
+    } else {
+      showScreen('screen-retrieve');
+      document.getElementById('box-error').classList.add('show');
     }
-  } catch(e) { hideSpinner(); alert('Network error. Please try again.'); }
+  } catch(e) {
+    hideSpinner();
+    showScreen('screen-retrieve');
+    document.getElementById('box-error').classList.add('show');
+  }
+  retrievePin = ''; updatePinBoxes();
 }
 
 function resetRetrieve() {
@@ -1050,6 +1113,7 @@ function resetRetrieve() {
 
 function resetAll() {
   selectedLocker = null; stripeCheckoutUrl = ''; cashSessionId = null;
+  currentOtPin = ''; currentOtAmount = 0; currentNfcOtPin = '';
   if (qrPollingTimer)   { clearInterval(qrPollingTimer);   qrPollingTimer   = null; }
   if (cashPollingTimer) { clearInterval(cashPollingTimer); cashPollingTimer = null; }
   document.getElementById('btn-continue').disabled     = true;

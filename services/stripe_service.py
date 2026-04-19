@@ -15,7 +15,7 @@ def create_rental_session(locker_number: int):
     """
     Creates a Stripe Checkout session for a 1-hour rental.
     Returns (url, session_id).
-    Raises Exception on Stripe error.
+    Passes type=rental in metadata so polling can distinguish from overtime.
     """
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],
@@ -36,18 +36,20 @@ def create_rental_session(locker_number: int):
             f"&session_id={{CHECKOUT_SESSION_ID}}"
         ),
         cancel_url=f"{BASE_URL}/payment-cancelled",
-        metadata={"locker_number": str(locker_number)},
+        metadata={
+            "locker_number": str(locker_number),
+            "type":          "rental",
+        },
     )
-    print(f"[Stripe] Session created: id={session.id} url={session.url}")
+    print(f"[Stripe] Rental session created: id={session.id}")
     return session.url, session.id
 
 
-def create_overtime_session(locker_number: int, pin: str, hours: int, amount: int) -> str:
+def create_overtime_session(locker_number: int, pin: str, hours: int, amount: int):
     """
     Creates a Stripe Checkout session for overtime charges.
-    amount is in centavos.
-    Returns the redirect URL.
-    Raises Exception on Stripe error.
+    Returns (url, session_id).
+    Passes type=overtime and pin in metadata so polling can mark overtime paid.
     """
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],
@@ -69,6 +71,11 @@ def create_overtime_session(locker_number: int, pin: str, hours: int, amount: in
             f"&session_id={{CHECKOUT_SESSION_ID}}"
         ),
         cancel_url=f"{BASE_URL}/",
-        metadata={"pin": pin, "locker_number": str(locker_number)},
+        metadata={
+            "pin":          pin,
+            "locker_number": str(locker_number),
+            "type":          "overtime",
+        },
     )
-    return session.url
+    print(f"[Stripe] Overtime session created: id={session.id} | PIN={pin}")
+    return session.url, session.id

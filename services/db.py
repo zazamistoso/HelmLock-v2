@@ -88,7 +88,7 @@ def db_insert_transaction(data: dict) -> bool:
 
 
 def db_get_transaction_by_pin(pin: str) -> dict | None:
-    """Return the active transaction matching pin, or None."""
+    """Return the transaction matching pin (active or overdue), or None."""
     sb = get_client()
     if not sb:
         return None
@@ -96,9 +96,17 @@ def db_get_transaction_by_pin(pin: str) -> dict | None:
         res = sb.table("transactions") \
             .select("*") \
             .eq("pin", pin) \
-            .eq("status", "active") \
+            .in_("status", ["active", "expired"]) \
+            .order("created_at", desc=True) \
+            .limit(1) \
             .execute()
-        return res.data[0] if res.data else None
+        if not res.data:
+            return None
+        row = res.data[0]
+        # Normalize NULL values from Supabase
+        row["overtime_paid"] = bool(row.get("overtime_paid") or False)
+        row["overtime_amount"] = row.get("overtime_amount") or 0
+        return row
     except Exception as e:
         print(f"[DB] db_get_transaction_by_pin error: {e}")
         return None
