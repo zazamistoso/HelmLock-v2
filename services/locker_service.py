@@ -7,6 +7,12 @@ from services.db import (
     db_get_overdue_transactions, db_update_transaction,
     db_get_transaction_by_pin
 )
+try:
+    from controller.controller import store as ctrl_store, claim as ctrl_claim
+    _HW = True
+except Exception as e:
+    print(f"[Service] Controller unavailable ({e}); physical locker commands disabled.")
+    _HW = False
 
 NUM_LOCKERS   = 12
 SESSION_HOURS = 1
@@ -150,6 +156,8 @@ def create_rental(locker_number: int, payment_method: str, amount: int, pin: str
     if ok:
         db_set_locker(locker_number, "occupied")
         print(f"[Service] Rental created — Locker #{locker_number} | {payment_method} | PIN={pin}")
+        if _HW:
+            ctrl_store(locker_number)
     else:
         print(f"[Service] ERROR: transaction insert failed for Locker #{locker_number}")
 
@@ -233,6 +241,8 @@ def unlock_locker(pin: str) -> dict:
         _dev_store[pin]["status"] = "retrieved"
 
     print(f"[Service] Locker #{row['locker_number']} unlocked via PIN={pin}")
+    if _HW:
+        ctrl_claim(row["locker_number"])
     return {"ok": True, "locker": row["locker_number"]}
 
 
