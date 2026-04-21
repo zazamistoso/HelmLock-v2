@@ -3,6 +3,13 @@ import uuid
 from services.locker_service import generate_pin, create_rental, now_utc, RENTAL_PRICE
 from supabase import create_client, Client
 
+try:
+    from controller.controller import store as ctrl_store, claim as ctrl_claim
+    _HW = True
+except Exception as e:
+    print(f"[NFC Service] Controller unavailable ({e}); physical locker commands disabled.")
+    _HW = False
+
 # ── Supabase Client ───────────────────────────────────
 def get_client() -> Client | None:
     url = os.environ.get("SUPABASE_URL", "")
@@ -177,6 +184,8 @@ def create_rental_with_card(locker_number: int, card_uid: str, pin: str):
                 "overtime_amount": 0,
             }).execute()
             db_set_locker(locker_number, "occupied")
+            if _HW:
+                ctrl_store(locker_number)
         except Exception as e:
             print(f"[NFC] create_rental_with_card error: {e}")
 
@@ -234,6 +243,8 @@ def nfc_process_retrieval(card_uid: str) -> dict:
     })
 
     print(f"[NFC] Retrieval — Locker #{transaction['locker_number']} | UID={card_uid}")
+    if _HW:
+        ctrl_claim(transaction["locker_number"])
 
     return {"ok": True, "locker": transaction["locker_number"]}
 
@@ -245,83 +256,43 @@ def nfc_process_retrieval(card_uid: str) -> dict:
 _cash_sessions: dict = {}
 
 
-def cash_create_session(locker_number: int) -> str:
-    """Create a new coin payment session. Returns session_id."""
-    session_id = str(uuid.uuid4())
-    _cash_sessions[session_id] = {
-        "locker":   locker_number,
-        "inserted": 0,
-        "status":   "pending",
-        "coins":    [],
+def cash_create_session(locker_number: int) -> dict:
+    """
+    Starts a coin payment session by delegating to the controller.
+    Blocks until the Arduino confirms the full amount collected (up to 120s).
+    Returns dict with ok, pin, locker, rented_at, expires_at or error.
+    """
+    from services.locker_service import generate_pin, create_rental
+
+    print(f"[Cash] Starting coin payment — Locker #{locker_number}")
+
+    if not _HW:
+        print("[Cash] HW unavailable — skipping coin payment")
+        paid = True
+    else:
+        from controller.controller import payment as ctrl_payment
+        paid = ctrl_payment(RENTAL_PRICE)
+
+    if not paid:
+        return {"ok": False, "error": "Payment timed out. Please try again."}
+
+    pin                   = generate_pin()
+    rented_at, expires_at = create_rental(locker_number, "cash", RENTAL_PRICE, pin)
+
+    print(f"[Cash] Payment complete — Locker #{locker_number} | PIN={pin}")
+
+    return {
+        "ok":         True,
+        "pin":        pin,
+        "locker":     locker_number,
+        "rented_at":  rented_at.strftime("%b %d, %Y %I:%M %p"),
+        "expires_at": expires_at.strftime("%b %d, %Y %I:%M %p"),
     }
-    print(f"[Cash] Session created — Locker #{locker_number} | session={session_id}")
-    return session_id
 
 
 def cash_insert_coin(session_id: str, amount: int) -> dict:
-    """
-    Called by coin acceptor hardware when a coin is inserted.
-    amount in centavos: 100=₱1, 500=₱5, 1000=₱10, 2000=₱20
-    Exact ₱50 required — overpayment locks the session.
-    """
-    if session_id not in _cash_sessions:
-        return {"ok": False, "error": "Invalid session."}
-
-    session = _cash_sessions[session_id]
-
-    if session["status"] == "complete":
-        return {"ok": False, "error": "Payment already completed."}
-
-    if session["status"] == "overpaid":
-        return {"ok": False, "error": "Overpayment detected. Please start a new session."}
-
-    if amount not in ACCEPTED_COINS:
-        return {"ok": False, "error": "Coin not accepted. Use ₱1, ₱5, ₱10, or ₱20 coins."}
-
-    new_total = session["inserted"] + amount
-
-    if new_total > RENTAL_PRICE:
-        session["status"] = "overpaid"
-        print(f"[Cash] Overpayment — Total would be ₱{new_total // 100} — session locked")
-        return {
-            "ok":       False,
-            "overpaid": True,
-            "inserted": session["inserted"],
-            "error":    f"Overpayment detected (₱{new_total // 100}.00). No change available. Please start a new session.",
-        }
-
-    session["inserted"] = new_total
-    session["coins"].append(amount)
-    remaining = RENTAL_PRICE - new_total
-    complete  = new_total == RENTAL_PRICE
-
-    print(f"[Cash] Coin ₱{amount // 100} inserted — Total: ₱{new_total // 100} | Remaining: ₱{remaining // 100}")
-
-    if complete:
-        from services.locker_service import generate_pin, create_rental
-        locker_number         = session["locker"]
-        pin                   = generate_pin()
-        rented_at, expires_at = create_rental(locker_number, "cash", RENTAL_PRICE, pin)
-        session["status"]     = "complete"
-        session["pin"]        = pin
-
-        print(f"[Cash] Payment complete — Locker #{locker_number} | PIN={pin}")
-
-        return {
-            "ok":         True,
-            "complete":   True,
-            "pin":        pin,
-            "locker":     locker_number,
-            "rented_at":  rented_at.strftime("%b %d, %Y %I:%M %p"),
-            "expires_at": expires_at.strftime("%b %d, %Y %I:%M %p"),
-        }
-
-    return {
-        "ok":        True,
-        "complete":  False,
-        "inserted":  new_total,
-        "remaining": remaining,
-    }
+    """Kept for backwards compatibility — coin counting is now handled by the controller via cash_create_session."""
+    return {"ok": False, "error": "Coin counting is handled by the controller. Use cash_create_session instead."}
 
 
 def cash_get_session(session_id: str) -> dict:
