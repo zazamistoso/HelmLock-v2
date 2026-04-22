@@ -147,17 +147,15 @@ void sanitise(int locker) {
 
   // UV
   digitalWrite(uvPins[locker], HIGH);
-  delay(3000);
-  digitalWrite(uvPins[locker], LOW);
-
+  delay(600000); // 10 mins
   // MIST
   digitalWrite(mistPins[locker], HIGH);
-  delay(2000);
+  delay(300000);
   digitalWrite(mistPins[locker], LOW);
-
+  digitalWrite(uvPins[locker], LOW);
   // FAN
   digitalWrite(fanPins[locker], HIGH);
-  delay(3000);
+  delay(120000);
   digitalWrite(fanPins[locker], LOW);
 
   Serial.println("SANITISE-DONE-" + String(locker));
