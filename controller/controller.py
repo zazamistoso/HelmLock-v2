@@ -2,7 +2,7 @@ import serial
 import time
 import threading
 
-SERIAL_PORT = "/dev/ttyACM0"
+SERIAL_PORT = "COM9"
 BAUD_RATE   = 115200
 TIMEOUT     = 10
 

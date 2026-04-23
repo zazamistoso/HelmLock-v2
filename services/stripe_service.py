@@ -16,6 +16,7 @@ def create_rental_session(locker_number: int):
     Creates a Stripe Checkout session for a 1-hour rental.
     Returns (url, session_id).
     Passes type=rental in metadata so polling can distinguish from overtime.
+    Phone number collection is enabled so we can SMS the PIN after payment.
     """
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],
@@ -30,6 +31,7 @@ def create_rental_session(locker_number: int):
             "quantity": 1,
         }],
         mode="payment",
+        phone_number_collection={"enabled": True},  # collect phone for PIN SMS
         success_url=(
             f"{BASE_URL}/payment-success"
             f"?locker={locker_number}"
@@ -50,6 +52,7 @@ def create_overtime_session(locker_number: int, pin: str, hours: int, amount: in
     Creates a Stripe Checkout session for overtime charges.
     Returns (url, session_id).
     Passes type=overtime and pin in metadata so polling can mark overtime paid.
+    No phone collection needed — user already provided it during initial rental.
     """
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],
@@ -72,7 +75,7 @@ def create_overtime_session(locker_number: int, pin: str, hours: int, amount: in
         ),
         cancel_url=f"{BASE_URL}/",
         metadata={
-            "pin":          pin,
+            "pin":           pin,
             "locker_number": str(locker_number),
             "type":          "overtime",
         },

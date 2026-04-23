@@ -10,6 +10,7 @@ from services.stripe_service import (
     is_stripe_configured, create_rental_session, create_overtime_session
 )
 from services.db import db_get_transaction_by_pin
+from services.sms_service import send_pin_sms
 
 payment_bp = Blueprint("payment", __name__)
 
@@ -86,6 +87,7 @@ def stripe_webhook():
     """
     Receives Stripe events. Handles both rental and overtime payments.
     Updates _session_store so kiosk polling picks up the result.
+    Phone number is collected by Stripe Checkout and used to SMS the PIN.
     """
     payload        = request.get_data()
     sig_header     = request.headers.get("Stripe-Signature", "")
@@ -108,6 +110,9 @@ def stripe_webhook():
         locker_number = int(metadata.get("locker_number", 0))
         pin           = metadata.get("pin", "")
 
+        # Extract phone number from Stripe customer details
+        phone_number = session.get("customer_details", {}).get("phone", "")
+
         if payment_type == "overtime" and pin:
             # Overtime payment confirmed
             row = db_get_transaction_by_pin(pin)
@@ -126,6 +131,13 @@ def stripe_webhook():
             # Rental payment confirmed
             new_pin = generate_pin()
             rented_at, expires_at = create_rental(locker_number, "stripe", RENTAL_PRICE, new_pin)
+
+            # Send PIN via SMS
+            if phone_number:
+                send_pin_sms(phone_number, new_pin, locker_number, expires_at.strftime("%I:%M %p"))
+            else:
+                print(f"[SMS] No phone number found for session {session_id}, skipping SMS.")
+
             _session_store[session_id] = {
                 "status":     "paid",
                 "type":       "rental",
@@ -147,6 +159,9 @@ def api_session_status():
     Polled by kiosk every 3 seconds.
     Handles both rental and overtime session types.
     Checks Stripe directly as fallback if webhook hasn't fired.
+    SMS is sent here as fallback if webhook didn't trigger it.
+    _session_store is updated FIRST before any serial/SMS calls
+    to prevent duplicate rentals if those calls crash.
     """
     session_id = request.args.get("session_id", "")
     if not session_id:
@@ -159,12 +174,16 @@ def api_session_status():
 
     # Poll Stripe directly
     try:
-        session = stripe.checkout.Session.retrieve(session_id)
+        session       = stripe.checkout.Session.retrieve(session_id)
         if session.payment_status == "paid":
-            metadata     = session.metadata or {}
-            payment_type = metadata.get("type", "rental")
-            pin          = metadata.get("pin", "")
+            metadata      = session.metadata or {}
+            payment_type  = metadata.get("type", "rental")
+            pin           = metadata.get("pin", "")
             locker_number = int(metadata.get("locker_number", 0))
+
+            # ── Correct way to access Stripe object fields ──
+            customer_details = session.customer_details
+            phone_number     = customer_details.phone if customer_details else ""
 
             if payment_type == "overtime" and pin:
                 if session_id not in _session_store or _session_store[session_id].get("status") != "paid":
@@ -183,8 +202,10 @@ def api_session_status():
 
             elif payment_type == "rental" and locker_number:
                 if session_id not in _session_store or _session_store[session_id].get("status") != "paid":
-                    new_pin = generate_pin()
+                    new_pin   = generate_pin()
                     rented_at, expires_at = create_rental(locker_number, "stripe", RENTAL_PRICE, new_pin)
+
+                    # ── Save to store FIRST before anything that can crash ──
                     _session_store[session_id] = {
                         "status":     "paid",
                         "type":       "rental",
@@ -194,11 +215,26 @@ def api_session_status():
                         "expires_at": expires_at.strftime("%b %d, %Y %I:%M %p"),
                     }
                     print(f"[Polling] Rental confirmed — Locker #{locker_number} | PIN={new_pin}")
+
+                    # ── SMS after store is saved — crash here won't cause duplicate ──
+                    if phone_number:
+                        try:
+                            send_pin_sms(phone_number, new_pin, locker_number, expires_at.strftime("%I:%M %p"))
+                        except Exception as sms_err:
+                            print(f"[SMS] Failed to send PIN: {sms_err}")
+                    else:
+                        print(f"[SMS] No phone number for session {session_id}, skipping.")
+
                 return jsonify(_session_store[session_id])
 
         return jsonify({"status": "pending"})
+
     except Exception as e:
         print(f"[Polling] Stripe error: {e}")
+        # Return stored result if we have one, even if Stripe call failed
+        stored = _session_store.get(session_id, {})
+        if stored.get("status") == "paid":
+            return jsonify(stored)
         return jsonify({"status": "pending"})
 
 
