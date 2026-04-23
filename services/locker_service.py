@@ -137,7 +137,7 @@ def create_rental(locker_number: int, payment_method: str, amount: int, pin: str
     """
     locker_number = int(locker_number)
     rented_at     = now_utc()
-    expires_at = rented_at + timedelta(minutes=1) # minutes=1 to test the overtime
+    expires_at = rented_at + timedelta(hours=SESSION_HOURS) # minutes=1 to test the overtime
 
     from services.db import db_insert_transaction
     ok = db_insert_transaction({
@@ -157,7 +157,10 @@ def create_rental(locker_number: int, payment_method: str, amount: int, pin: str
         db_set_locker(locker_number, "occupied")
         print(f"[Service] Rental created — Locker #{locker_number} | {payment_method} | PIN={pin}")
         if _HW:
-            ctrl_store(locker_number)
+            try:
+                ctrl_store(locker_number)
+            except Exception as hw_err:
+                print(f"[HW] Serial error (non-fatal): {hw_err}")
     else:
         print(f"[Service] ERROR: transaction insert failed for Locker #{locker_number}")
 
@@ -242,7 +245,10 @@ def unlock_locker(pin: str) -> dict:
 
     print(f"[Service] Locker #{row['locker_number']} unlocked via PIN={pin}")
     if _HW:
-        ctrl_claim(row["locker_number"])
+        try:
+            ctrl_claim(row["locker_number"])
+        except Exception as hw_err:
+            print(f"[HW] Serial error (non-fatal): {hw_err}")
     return {"ok": True, "locker": row["locker_number"]}
 
 
