@@ -203,6 +203,30 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
 @keyframes spin{to{transform:rotate(360deg)}}
 .spinner-label{font-family:'DM Mono',monospace;font-size:0.8rem;color:var(--muted);}
 .footer{position:fixed;bottom:0;left:0;right:0;height:36px;background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px;font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--muted);z-index:10;}
+
+/* ── Phone Number Screen ─────────────────────────── */
+.phone-wrap{flex:1;display:flex;align-items:center;justify-content:center;gap:56px;}
+.phone-left{display:flex;flex-direction:column;align-items:center;gap:24px;}
+.phone-icon-ring{width:100px;height:100px;border-radius:50%;background:rgba(79,142,247,0.08);border:2px solid rgba(79,142,247,0.3);display:flex;align-items:center;justify-content:center;font-size:3rem;animation:phonePulse 2s infinite;}
+@keyframes phonePulse{0%,100%{box-shadow:0 0 0 0 rgba(79,142,247,0.3)}50%{box-shadow:0 0 0 14px rgba(79,142,247,0)}}
+.phone-display{background:var(--panel);border:2px solid var(--border);border-radius:16px;padding:20px 32px;min-width:300px;text-align:center;}
+.phone-display-label{font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.phone-display-number{font-family:'Bebas Neue',sans-serif;font-size:2.6rem;color:var(--blue);letter-spacing:0.08em;min-height:56px;display:flex;align-items:center;justify-content:center;gap:2px;}
+.phone-display-number.placeholder{color:var(--muted);font-size:1.8rem;letter-spacing:0.04em;}
+.phone-display.has-error{border-color:var(--red);}
+.phone-error-msg{font-size:0.78rem;color:var(--red);margin-top:8px;text-align:center;min-height:20px;}
+.phone-note{font-size:0.75rem;color:var(--muted);text-align:center;line-height:1.6;max-width:260px;}
+.phone-note strong{color:var(--text);}
+.phone-right{display:flex;flex-direction:column;gap:12px;align-items:center;}
+.phone-keypad{display:grid;grid-template-columns:repeat(3,88px);grid-template-rows:repeat(4,78px);gap:10px;}
+.phone-key{background:var(--panel);border:2px solid var(--border);border-radius:14px;font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--text);cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;}
+.phone-key:hover{background:var(--border);transform:scale(0.97);}
+.phone-key:active{transform:scale(0.91);}
+.phone-key-sub{font-family:'DM Mono',monospace;font-size:0.5rem;letter-spacing:0.12em;color:var(--muted);}
+.phone-key.key-del{font-size:1.3rem;color:var(--muted);}
+.phone-key.key-confirm{background:var(--blue);color:#fff;border-color:var(--blue);font-family:'Barlow',sans-serif;font-size:1rem;font-weight:700;letter-spacing:0.03em;}
+.phone-key.key-confirm:hover{background:#3a7ef5;}
+.phone-key.key-confirm:disabled{opacity:0.35;cursor:not-allowed;}
 </style>
 </head>
 <body>
@@ -238,7 +262,7 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
       <div class="sidebar-divider"></div>
       <div class="sidebar-info">
         <div class="sidebar-info-title">HOW IT WORKS</div>
-        Select locker → Pay ₱50 → Get PIN or tap card → Retrieve helmet.
+        Select locker → Enter number → Pay ₱50 → Get PIN via SMS.
       </div>
     </nav>
 
@@ -264,7 +288,31 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
         </div>
         <div class="action-bar">
           <div class="selected-info" id="selected-info">No locker selected</div>
-          <button class="btn btn-primary" id="btn-continue" disabled onclick="goToPayment()">Continue to Payment →</button>
+          <button class="btn btn-primary" id="btn-continue" disabled onclick="goToPhone()">Continue →</button>
+        </div>
+      </div>
+
+      <!-- SCREEN: Enter Phone Number (NEW) -->
+      <div class="screen" id="screen-phone">
+        <div class="screen-title">Enter Your Number</div>
+        <div class="screen-sub" id="phone-sub">Locker #— · Your PIN will be sent via SMS</div>
+        <div class="phone-wrap">
+          <div class="phone-left">
+            <div class="phone-icon-ring">📱</div>
+            <div class="phone-display" id="phone-display-card">
+              <div class="phone-display-label">Mobile Number</div>
+              <div class="phone-display-number placeholder" id="phone-display">0XX XXX XXXX</div>
+              <div class="phone-error-msg" id="phone-error-msg"></div>
+            </div>
+            <div class="phone-note">
+              <strong>Why do we need this?</strong><br/>
+              Your locker PIN will be sent to this number via SMS so you can retrieve your helmet anytime.
+            </div>
+          </div>
+          <div class="phone-right">
+            <div class="phone-keypad" id="phone-keypad"></div>
+            <button class="btn btn-ghost" style="width:100%;margin-top:4px;" onclick="showScreen('screen-select')">← Back</button>
+          </div>
         </div>
       </div>
 
@@ -290,7 +338,10 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
           </div>
         </div>
         <div class="action-bar">
-          <button class="btn btn-ghost" onclick="showScreen('screen-select')">← Back</button>
+          <div class="selected-info">
+            📱 <span id="payment-phone-display" style="font-family:'DM Mono',monospace;color:var(--blue);font-size:0.88rem;">—</span>
+          </div>
+          <button class="btn btn-ghost" onclick="showScreen('screen-phone')">← Back</button>
         </div>
       </div>
 
@@ -462,7 +513,7 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
       <!-- SCREEN: PIN Receipt (Cash + QR) -->
       <div class="screen" id="screen-pin">
         <div class="screen-title">Payment Confirmed</div>
-        <div class="screen-sub">Your locker is locked — keep this PIN safe</div>
+        <div class="screen-sub">Your locker is locked — PIN also sent to your phone</div>
         <div class="pin-result-wrap">
           <div class="receipt-card">
             <div class="receipt-header">
@@ -476,6 +527,7 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:var(--bg);color:va
               <div class="receipt-row"><span class="receipt-label">🕐 Rented At</span><span class="receipt-val" id="r-time">—</span></div>
               <div class="receipt-row"><span class="receipt-label">⏱ Expires At</span><span class="receipt-val" id="r-expires">—</span></div>
               <div class="receipt-row"><span class="receipt-label">💰 Amount</span><span class="receipt-val accent">₱50.00</span></div>
+              <div class="receipt-row"><span class="receipt-label">📱 SMS Sent To</span><span class="receipt-val" id="r-phone" style="color:var(--blue);">—</span></div>
             </div>
             <div class="receipt-divider dashed"></div>
             <div style="text-align:center;">
@@ -590,12 +642,14 @@ let retrievePin       = '';
 let currentOtPin      = '';
 let currentOtAmount   = 0;
 let currentNfcOtPin   = '';
-let currentQrMode     = 'rental';  // 'rental' or 'overtime'
+let currentQrMode     = 'rental';
 let stripeCheckoutUrl = '';
 let qrPollingTimer    = null;
 let cashSessionId     = null;
 let cashPollingTimer  = null;
-let cashMode          = 'rental';  // 'rental' or 'overtime'
+let cashMode          = 'rental';
+let customerPhone     = '';      // ← stores phone number entered on kiosk
+let phoneInput        = '';      // ← raw digits being typed on phone screen
 
 // ── Clock ─────────────────────────────────────────
 function tick() {
@@ -648,28 +702,21 @@ function switchRetrieveMethod(method) {
 
 // ── Overtime Payment Navigation ───────────────────
 function goToOvertimePayment() {
-  // Show overtime payment selection screen
   const amountDisplay = `₱${currentOtAmount / 100}.00`;
   document.getElementById('ot-pay-sub').textContent = `${amountDisplay} overtime due · choose payment method`;
   showScreen('screen-overtime-payment');
 }
 
 function goToNfcOvertimePayment() {
-  // For NFC retrieval overtime — use the internal pin stored during NFC tap
   currentOtPin = currentNfcOtPin;
   goToOvertimePayment();
 }
 
 async function selectOvertimePayment(method) {
   if (!currentOtPin) { alert('Session expired. Please try again.'); showScreen('screen-retrieve'); return; }
-
-  if (method === 'stripe') {
-    await startOvertimeQR();
-  } else if (method === 'cash') {
-    await startOvertimeCash();
-  } else if (method === 'nfc') {
-    startOvertimeNfc();
-  }
+  if (method === 'stripe')    await startOvertimeQR();
+  else if (method === 'cash') await startOvertimeCash();
+  else if (method === 'nfc')  startOvertimeNfc();
 }
 
 // ── Locker Bank ───────────────────────────────────
@@ -718,6 +765,89 @@ function pickLocker(num) {
   renderBank();
 }
 
+// ── Phone Number Screen ───────────────────────────
+function goToPhone() {
+  if (!selectedLocker) return;
+  phoneInput = '';
+  document.getElementById('phone-sub').textContent = `Locker #${selectedLocker} · Your PIN will be sent via SMS`;
+  document.getElementById('phone-error-msg').textContent = '';
+  document.getElementById('phone-display-card').classList.remove('has-error');
+  updatePhoneDisplay();
+  showScreen('screen-phone');
+}
+
+function buildPhoneKeypad() {
+  const kp = document.getElementById('phone-keypad');
+  kp.innerHTML = '';
+  const keys = [
+    {d:'1', s:''}, {d:'2', s:'ABC'}, {d:'3', s:'DEF'},
+    {d:'4', s:'GHI'}, {d:'5', s:'JKL'}, {d:'6', s:'MNO'},
+    {d:'7', s:'PQRS'}, {d:'8', s:'TUV'}, {d:'9', s:'WXYZ'},
+    {d:'⌫', s:'', cls:'key-del'}, {d:'0', s:'+'}, {d:'OK', s:'', cls:'key-confirm'},
+  ];
+  keys.forEach(k => {
+    const btn = document.createElement('button');
+    btn.className = 'phone-key ' + (k.cls || '');
+    btn.innerHTML = k.s
+      ? `${k.d}<span class="phone-key-sub">${k.s}</span>`
+      : k.d;
+    btn.addEventListener('click', () => handlePhoneKey(k.d));
+    kp.appendChild(btn);
+  });
+}
+
+function formatPhoneDisplay(digits) {
+  // Format as: 0917 123 4567
+  if (!digits) return '';
+  const d = digits;
+  if (d.length <= 4)  return d;
+  if (d.length <= 7)  return d.slice(0,4) + ' ' + d.slice(4);
+  return d.slice(0,4) + ' ' + d.slice(4,7) + ' ' + d.slice(7);
+}
+
+function updatePhoneDisplay() {
+  const el = document.getElementById('phone-display');
+  if (!phoneInput) {
+    el.textContent = '0XX XXX XXXX';
+    el.classList.add('placeholder');
+  } else {
+    el.textContent = formatPhoneDisplay(phoneInput);
+    el.classList.remove('placeholder');
+  }
+}
+
+function handlePhoneKey(k) {
+  document.getElementById('phone-error-msg').textContent = '';
+  document.getElementById('phone-display-card').classList.remove('has-error');
+
+  if (k === '⌫') {
+    phoneInput = phoneInput.slice(0, -1);
+  } else if (k === 'OK') {
+    confirmPhone();
+    return;
+  } else if (phoneInput.length < 11) {
+    phoneInput += k;
+  }
+  updatePhoneDisplay();
+}
+
+function confirmPhone() {
+  // Validate PH mobile: starts with 09, exactly 11 digits
+  const valid = /^09\d{9}$/.test(phoneInput);
+  if (!valid) {
+    document.getElementById('phone-display-card').classList.add('has-error');
+    document.getElementById('phone-error-msg').textContent =
+      phoneInput.length < 11
+        ? `${11 - phoneInput.length} more digit${11 - phoneInput.length !== 1 ? 's' : ''} needed`
+        : 'Must start with 09 (e.g. 09171234567)';
+    return;
+  }
+  customerPhone = phoneInput;
+  document.getElementById('pay-sub').textContent = `Locker #${selectedLocker} · ₱50.00 / hour`;
+  document.getElementById('payment-phone-display').textContent = formatPhoneDisplay(customerPhone);
+  showScreen('screen-payment');
+}
+
 // ── Rental Payment ────────────────────────────────
 function goToPayment() {
   if (!selectedLocker) return;
@@ -764,7 +894,6 @@ async function startOvertimeQR() {
     hideSpinner();
     if (data.error) { alert('Error: ' + data.error); return; }
     if (data.dev_mode) {
-      // Dev mode — overtime already marked paid, unlock now
       await doUnlock(currentOtPin);
       currentOtPin = ''; currentOtAmount = 0;
     } else if (data.url) {
@@ -793,11 +922,7 @@ function showQRScreen(url, title, sub, amountDisplay, locker) {
 function cancelQR() {
   if (qrPollingTimer) { clearInterval(qrPollingTimer); qrPollingTimer = null; }
   stripeCheckoutUrl = '';
-  if (currentQrMode === 'overtime') {
-    showScreen('screen-overtime-payment');
-  } else {
-    showScreen('screen-payment');
-  }
+  showScreen(currentQrMode === 'overtime' ? 'screen-overtime-payment' : 'screen-payment');
 }
 
 function startQrPolling(sessionId, mode) {
@@ -809,11 +934,9 @@ function startQrPolling(sessionId, mode) {
       if (data.status === 'paid') {
         clearInterval(qrPollingTimer); qrPollingTimer = null;
         if (data.type === 'overtime' || mode === 'overtime') {
-          // Overtime paid — unlock now
           await doUnlock(data.pin || currentOtPin);
           currentOtPin = ''; currentOtAmount = 0;
         } else {
-          // Rental paid — show PIN
           showPinScreen(data.pin, data.locker, 'QR Payment', data.rented_at, data.expires_at);
         }
       }
@@ -824,14 +947,17 @@ function startQrPolling(sessionId, mode) {
 // ── Coin Payment (rental + overtime) ─────────────
 async function startCashPayment(mode) {
   cashMode = mode || 'rental';
-  const targetAmount = cashMode === 'overtime' ? currentOtAmount : 5000;
+  const targetAmount  = cashMode === 'overtime' ? currentOtAmount : 5000;
   const amountDisplay = `₱${targetAmount / 100}.00`;
 
   showSpinner('Starting coin session…');
   try {
     const res  = await fetch('/api/cash-start', {
       method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({locker_number: selectedLocker || 0}),
+      body: JSON.stringify({
+        locker_number: selectedLocker || 0,
+        phone: customerPhone,          // ← pass phone for SMS
+      }),
     });
     const data = await res.json();
     hideSpinner();
@@ -879,7 +1005,6 @@ function startCashPolling(sessionId, targetAmount) {
       if (data.status === 'complete' && data.pin) {
         clearInterval(cashPollingTimer); cashPollingTimer = null;
         if (cashMode === 'overtime') {
-          // Coin overtime paid — unlock now
           await doUnlock(currentOtPin);
           currentOtPin = ''; currentOtAmount = 0;
         } else {
@@ -894,11 +1019,7 @@ function cancelCash() {
   if (cashPollingTimer) { clearInterval(cashPollingTimer); cashPollingTimer = null; }
   cashSessionId = null;
   document.getElementById('cash-overpay-box').style.display = 'none';
-  if (cashMode === 'overtime') {
-    showScreen('screen-overtime-payment');
-  } else {
-    showScreen('screen-payment');
-  }
+  showScreen(cashMode === 'overtime' ? 'screen-overtime-payment' : 'screen-payment');
 }
 
 // ── Stored Value Card Payment ─────────────────────
@@ -908,19 +1029,16 @@ function startNfcPayment() {
   document.getElementById('nfc-balance-display').textContent  = '—';
   document.getElementById('nfc-pay-status-text').textContent  = 'Waiting for card tap…';
   showScreen('screen-nfc-pay');
-  // Hardware team: POST { card_uid, locker_number } to /api/hardware/nfc-tapped with mode="payment"
+  // Hardware team: POST { card_uid, locker_number, phone: customerPhone } to /api/hardware/nfc-tapped
   // On response call: handleNfcPaymentResult(data)
 }
 
 function startOvertimeNfc() {
-  // NFC overtime — show NFC screen in overtime mode
   document.getElementById('nfc-pay-locker-label').textContent = '—';
   document.getElementById('nfc-pay-locker-val').textContent   = '—';
   document.getElementById('nfc-balance-display').textContent  = '—';
   document.getElementById('nfc-pay-status-text').textContent  = 'Waiting for card tap for overtime payment…';
   showScreen('screen-nfc-pay');
-  // Hardware team: POST { card_uid, pin: currentOtPin } to /api/nfc-overtime-payment
-  // On success call: handleNfcOvertimePaid()
 }
 
 function cancelNfcPay() {
@@ -982,6 +1100,7 @@ function showPinScreen(pin, locker, method, rented_at, expires_at) {
   document.getElementById('r-method').textContent  = method || 'Payment';
   document.getElementById('r-time').textContent    = rented_at  || '—';
   document.getElementById('r-expires').textContent = expires_at || '—';
+  document.getElementById('r-phone').textContent   = customerPhone ? formatPhoneDisplay(customerPhone) : '—';
   const row = document.getElementById('big-pin-row');
   row.innerHTML = '';
   String(pin).split('').forEach(d => {
@@ -1082,7 +1201,6 @@ async function doUnlock(pin) {
     const data = await res.json();
     hideSpinner();
     if (data.ok) {
-      // Show success on retrieve screen
       showScreen('screen-retrieve');
       switchRetrieveMethod('pin');
       document.getElementById('success-badge').textContent = 'LOCKER #' + data.locker;
@@ -1114,6 +1232,7 @@ function resetRetrieve() {
 function resetAll() {
   selectedLocker = null; stripeCheckoutUrl = ''; cashSessionId = null;
   currentOtPin = ''; currentOtAmount = 0; currentNfcOtPin = '';
+  customerPhone = ''; phoneInput = '';
   if (qrPollingTimer)   { clearInterval(qrPollingTimer);   qrPollingTimer   = null; }
   if (cashPollingTimer) { clearInterval(cashPollingTimer); cashPollingTimer = null; }
   document.getElementById('btn-continue').disabled     = true;
@@ -1125,7 +1244,7 @@ function resetAll() {
 }
 
 // ── Init ──────────────────────────────────────────
-buildKeypad(); buildPinBoxes(); loadLockers();
+buildKeypad(); buildPinBoxes(); buildPhoneKeypad(); loadLockers();
 setInterval(() => {
   if (document.getElementById('screen-select').classList.contains('active')) loadLockers();
 }, 10000);
